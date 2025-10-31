@@ -1,11 +1,11 @@
 # Mirror Server API Documentation
 
-A REST API for accessing osu! beatmap mirror data, including beatmapsets, beatmaps, statistics, and downloads.
+A REST API for accessing mirror.nekoha.moe, including beatmapsets, beatmaps, statistics, and downloads.
 
 ## Base URL
 
 ```
-http://your-server:port
+https://mirror.nekoha.moe
 ```
 
 ## Endpoints
