@@ -1,0 +1,25 @@
+services:
+  # Mirror API Server
+  # Modify variables to your likeness
+  mirror-server:
+    build:
+      context: ./mirror-server
+      dockerfile: Dockerfile
+    container_name: mirror-server
+    restart: always
+    env_file:
+      - ./mirror-server/src/.env
+    ports:
+      - "30727:30727"
+    volumes:
+      - /run/user/${UID:-1000}/podman/podman.sock:/run/podman/podman.sock:ro
+      - ./beatmap-fetcher/storage:/app/storage:Z
+    networks:
+      - mirror-network
+    extra_hosts:
+      - "host.containers.internal:host-gateway"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    security_opt:
+      - label=disable
