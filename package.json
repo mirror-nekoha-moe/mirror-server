@@ -2,17 +2,24 @@
   "name": "mirror-server",
   "version": "1.0.0",
   "description": "API server for nekoha mirror",
-  "main": "src/index.js",
+  "main": "src/worker.js",
   "type": "module",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "start": "node src/worker.js",
+    "dev": "nodemon src/worker.js",
+    "doc": "npx apidoc-markdown -i src/ -o README.MD"
   },
   "dependencies": {
+    "apidoc": "^1.2.0",
+    "apidoc-markdown": "^7.3.2",
+    "cluster": "^0.7.7",
     "cors": "^2.8.5",
+    "dayjs": "^1.11.19",
     "dotenv": "^16.3.1",
     "eventsource": "^4.0.0",
     "express": "^4.21.2",
+    "ioredis": "^5.8.2",
+    "os": "^0.1.2",
     "pg": "^8.11.3"
   },
   "devDependencies": {

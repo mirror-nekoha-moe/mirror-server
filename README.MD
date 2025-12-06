@@ -1,277 +1,369 @@
-# Mirror Server API Documentation
+<a name="top"></a>
+# mirror.nekoha.moe v1.0.0
 
-A REST API for accessing mirror.nekoha.moe, including beatmapsets, beatmaps, statistics, and downloads.
+REST API documentation for mirror.nekoha.moe
 
-## Base URL
+# Table of contents
+
+- [Beatmap](#Beatmap)
+  - [Get beatmap metadata](#Get-beatmap-metadata)
+- [Beatmapset](#Beatmapset)
+  - [Get .osz file size for a beatmapset](#Get-.osz-file-size-for-a-beatmapset)
+  - [Get all beatmapset .osz file sizes](#Get-all-beatmapset-.osz-file-sizes)
+  - [Get beatmapset metadata](#Get-beatmapset-metadata)
+  - [Get full beatmapset info (with beatmaps array)](#Get-full-beatmapset-info-(with-beatmaps-array))
+  - [Search beatmapsets](#Search-beatmapsets)
+- [File](#File)
+  - [Download a beatmapset (.osz file)](#Download-a-beatmapset-(.osz-file))
+- [Stats](#Stats)
+  - [Get beatmap mirror statistics](#Get-beatmap-mirror-statistics)
+
+___
+
+
+# <a name='Beatmap'></a> Beatmap
+
+## <a name='Get-beatmap-metadata'></a> Get beatmap metadata
+[Back to top](#top)
 
 ```
-https://mirror.nekoha.moe
+GET /api4/beatmap/:id
 ```
 
-## Endpoints
+### Parameters - `Parameter`
 
-### 1. Get Statistics
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `Number` | <p>Beatmap ID</p> |
 
-Returns overall statistics about the mirror database.
+### Examples
 
-**Endpoint:** `GET /api4/stats`
+Example usage:
 
-**Response:**
-```json
-{
-  "last_beatmapset_id": 4928644,
-  "beatmapset_count": 155432,
-  "beatmap_count": 1234567,
-  "ranked_count": 120000,
-  "approved_count": 5000,
-  "loved_count": 25000,
-  "graveyard_count": 3000,
-  "pending_count": 2432,
-  "total_size": 524288000000
-}
+```curl
+curl https://mirror.nekoha.moe/api4/beatmap/123456
 ```
 
-**Fields:**
-- `last_beatmapset_id` - Highest beatmapset ID in database
-- `beatmapset_count` - Total number of beatmapsets
-- `beatmap_count` - Total number of individual beatmaps (difficulties)
-- `ranked_count` - Number of ranked beatmapsets
-- `approved_count` - Number of approved beatmapsets
-- `loved_count` - Number of loved beatmapsets
-- `graveyard_count` - Number of graveyard beatmapsets
-- `pending_count` - Number of pending beatmapsets
-- `total_size` - Total size of downloaded beatmapsets in bytes
+### Success response
 
----
+#### Success response - `Success 200`
 
-### 2. Get Beatmapset Metadata
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| beatmap | `Object` | <p>Beatmap metadata object</p> |
 
-Returns metadata for a specific beatmapset (without beatmap difficulties).
+### Error response
 
-**Endpoint:** `GET /api4/beatmapset/:id`
+#### Error response - `Error 4xx`
 
-**Parameters:**
-- `id` (number, required) - Beatmapset ID
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| 400 |  | <p>Invalid beatmap ID (must be a positive number)</p> |
+| 404 |  | <p>Beatmap not found</p> |
+| 500 |  | <p>Internal server error</p> |
 
-**Example:** `GET /api4/beatmapset/1234`
+# <a name='Beatmapset'></a> Beatmapset
 
-**Response:**
-```json
-{
-  "id": 1234,
-  "status": 1,
-  "title": "Song Title",
-  "title_unicode": "曲名",
-  "artist": "Artist Name",
-  "artist_unicode": "アーティスト",
-  "creator": "mapper_username",
-  "user_id": 5678,
-  "source": "Anime/Game",
-  "tags": "tag1 tag2 tag3",
-  "beatmap_count": 5,
-  "osu": 3,
-  "taiko": 1,
-  "fruits": 0,
-  "mania": 1,
-  "bpm": 180.0,
-  "submitted": "2023-01-15T12:00:00Z",
-  "updated": "2023-02-20T15:30:00Z",
-  "ranked": "2023-03-01T10:00:00Z",
-  "loved": null,
-  "approved": null,
-  "genre_id": 2,
-  "language_id": 3,
-  "missing_audio": false,
-  "deleted": false,
-  "downloaded": true,
-  "file_size": 12345678
-}
+## <a name='Get-.osz-file-size-for-a-beatmapset'></a> Get .osz file size for a beatmapset
+[Back to top](#top)
+
+```
+GET /api4/osz/:id
 ```
 
-**Status Codes:**
-- `1` = Ranked
-- `2` = Approved
-- `4` = Loved
-- `0` = Pending
-- `-2` = Graveyard
+### Parameters - `Parameter`
 
-**Error Responses:**
-- `400 Bad Request` - `{"error": "Invalid beatmapset ID. Must be a positive number."}`
-- `404 Not Found` - `{"error": "Beatmapset not found"}`
-- `500 Internal Server Error` - `{"error": "Failed to fetch beatmapset"}`
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `Number` | <p>Beatmapset ID</p> |
 
----
+### Examples
 
-### 3. Get Beatmapset with Difficulties
+Example usage:
 
-Returns complete beatmapset data including all beatmap difficulties.
-
-**Endpoint:** `GET /api4/beatmapsetFull/:id`
-
-**Parameters:**
-- `id` (number, required) - Beatmapset ID
-
-**Example:** `GET /api4/beatmapsetFull/1234`
-
-**Response:**
-```json
-{
-  "id": 1234,
-  "status": 1,
-  "title": "Song Title",
-  "artist": "Artist Name",
-  "creator": "mapper_username",
-  "bpm": 180.0,
-  "downloaded": true,
-  "file_size": 12345678,
-  "...": "...other beatmapset fields...",
-  "beatmaps": [
-    {
-      "id": 5001,
-      "beatmapset_id": 1234,
-      "mode": 0,
-      "status": 1,
-      "version": "Easy",
-      "creator": "mapper_username",
-      "user_id": 5678,
-      "difficulty_rating": 2.5,
-      "cs": 4.0,
-      "ar": 8.0,
-      "od": 7.0,
-      "hp": 6.0,
-      "count_circles": 150,
-      "count_sliders": 80,
-      "count_spinners": 2,
-      "max_combo": 250,
-      "bpm": 180.0,
-      "total_length": 120,
-      "hit_length": 110,
-      "checksum": "abc123def456",
-      "last_updated": "2023-02-20T15:30:00Z",
-      "url": "https://osu.ppy.sh/beatmaps/5001",
-      "playcount": 50000,
-      "passcount": 25000,
-      "is_scoreable": true
-    },
-    {
-      "...": "...more difficulties..."
-    }
-  ]
-}
+```curl
+curl https://mirror.nekoha.moe/api4/osz/12345
 ```
 
-**Game Modes:**
-- `0` = osu!
-- `1` = Taiko
-- `2` = Catch the Beat (Fruits)
-- `3` = osu!mania
+### Success response
 
-**Beatmaps are sorted by difficulty_rating (easiest first)**
+#### Success response - `Success 200`
 
-**Error Responses:**
-- `400 Bad Request` - `{"error": "Invalid beatmapset ID. Must be a positive number."}`
-- `404 Not Found` - `{"error": "Beatmapset not found"}`
-- `500 Internal Server Error` - `{"error": "Failed to fetch full beatmapset"}`
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `Number` | <p>Beatmapset ID</p> |
+| file_size | `Number` | <p>Size of the .osz file in bytes</p> |
 
----
+### Error response
 
-### 4. Get Single Beatmap
+#### Error response - `Error 4xx`
 
-Returns data for a specific beatmap difficulty.
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| 400 |  | <p>Invalid beatmapset ID</p> |
+| 404 |  | <p>Beatmapset not found</p> |
+| 500 |  | <p>Internal server error</p> |
 
-**Endpoint:** `GET /api4/beatmap/:id`
+## <a name='Get-all-beatmapset-.osz-file-sizes'></a> Get all beatmapset .osz file sizes
+[Back to top](#top)
 
-**Parameters:**
-- `id` (number, required) - Beatmap ID
-
-**Example:** `GET /api4/beatmap/5001`
-
-**Response:**
-```json
-{
-  "id": 5001,
-  "beatmapset_id": 1234,
-  "mode": 0,
-  "status": 1,
-  "version": "Insane",
-  "creator": "mapper_username",
-  "user_id": 5678,
-  "difficulty_rating": 5.27,
-  "cs": 4.0,
-  "ar": 9.3,
-  "od": 8.5,
-  "hp": 6.0,
-  "count_circles": 450,
-  "count_sliders": 200,
-  "count_spinners": 3,
-  "max_combo": 850,
-  "bpm": 180.0,
-  "total_length": 180,
-  "hit_length": 165,
-  "checksum": "abc123def456789",
-  "last_updated": "2023-02-20T15:30:00Z",
-  "url": "https://osu.ppy.sh/beatmaps/5001",
-  "playcount": 250000,
-  "passcount": 50000,
-  "is_scoreable": true
-}
+```
+GET /api4/oszFull
 ```
 
-**Difficulty Fields:**
-- `difficulty_rating` - Star rating
-- `cs` - Circle Size
-- `ar` - Approach Rate
-- `od` - Overall Difficulty
-- `hp` - HP Drain Rate
+### Examples
 
-**Error Responses:**
-- `400 Bad Request` - `{"error": "Invalid beatmap ID. Must be a positive number."}`
-- `404 Not Found` - `{"error": "Beatmap not found"}`
-- `500 Internal Server Error` - `{"error": "Failed to fetch beatmap"}`
+Example usage:
 
----
+```curl
+curl https://mirror.nekoha.moe/api4/oszFull
+```
 
-### 5. Download Beatmapset
+### Success response
 
-Downloads the .osz file for a beatmapset.
+#### Success response - `Success 200`
 
-**Endpoint:** `GET /api4/download/:id`
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| beatmapsets | `Object[]` | <p>List of beatmapsets</p> |
+| beatmapsets.id | `Number` | <p>Beatmapset ID</p> |
+| beatmapsets.file_size | `Number` | <p>Size of the .osz file in bytes</p> |
 
-**Parameters:**
-- `id` (number, required) - Beatmapset ID
+### Error response
 
-**Example:** `GET /api4/download/1234`
+#### Error response - `Error 4xx`
 
-**Response:**
-- **Content-Type:** `application/x-osu-beatmap-archive`
-- **Content-Disposition:** `attachment; filename="1234 Artist - Title.osz"`
-- **Body:** Binary .osz file stream
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| 404 |  | <p>No beatmapsets found</p> |
+| 500 |  | <p>Internal server error</p> |
 
-**Error Responses:**
-- `400 Bad Request` - `{"error": "Invalid beatmapset ID. Must be a positive number."}`
-- `404 Not Found` - Multiple possible messages:
-  - `{"error": "Beatmapset not found"}`
-  - `{"error": "Beatmapset not downloaded yet"}`
-  - `{"error": "Beatmapset file not found on disk"}`
-  - `{"error": "Beatmapset .osz file not found"}`
-- `410 Gone` - `{"error": "Beatmapset missing (not available for download)\nContact me to upload this mapset."}`
-- `500 Internal Server Error` - `{"error": "Failed to download beatmapset"}` or `{"error": "Failed to stream beatmapset file"}`
+## <a name='Get-beatmapset-metadata'></a> Get beatmapset metadata
+[Back to top](#top)
 
-**Notes:**
-- Only beatmapsets marked as `downloaded: true` can be downloaded
-- Beatmapsets with `missing_audio: true` return 410 Gone:
-  - They need to be uploaded, contact me if u have the mapset.
+```
+GET /api4/beatmapset/:id
+```
 
+### Parameters - `Parameter`
 
-## Usage Examples
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `Number` | <p>Beatmapset ID</p> |
 
-```bash
-# Get stats
-curl http://localhost:3000/api4/stats
+### Examples
 
-# Get beatmapset
-curl http://localhost:3000/api4/beatmapset/1234
+Example usage:
 
-# Download beatmapset
-curl -O -J http://localhost:3000/api4/download/1234
-``
+```curl
+curl https://mirror.nekoha.moe/api4/beatmapset/12345
+```
+
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| beatmapset | `Object` | <p>Beatmapset metadata object</p> |
+
+### Error response
+
+#### Error response - `Error 4xx`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| 400 |  | <p>Invalid beatmapset ID (must be a positive number)</p> |
+| 404 |  | <p>Beatmapset not found</p> |
+| 500 |  | <p>Internal server error</p> |
+
+## <a name='Get-full-beatmapset-info-(with-beatmaps-array)'></a> Get full beatmapset info (with beatmaps array)
+[Back to top](#top)
+
+```
+GET /api4/beatmapsetFull/:id
+```
+
+### Parameters - `Parameter`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `Number` | <p>Beatmapset ID</p> |
+
+### Examples
+
+Example usage:
+
+```curl
+curl https://mirror.nekoha.moe/api4/beatmapsetFull/12345
+```
+
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| beatmapset | `Object` | <p>Beatmapset metadata object</p> |
+| beatmapset.beatmaps | `Object[]` | <p>Array of beatmaps in this beatmapset, sorted by difficulty_rating ASC</p> |
+
+### Error response
+
+#### Error response - `Error 4xx`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| 400 |  | <p>Invalid beatmapset ID (must be a positive number)</p> |
+| 404 |  | <p>Beatmapset not found</p> |
+| 500 |  | <p>Internal server error</p> |
+
+## <a name='Search-beatmapsets'></a> Search beatmapsets
+[Back to top](#top)
+
+```
+GET /api4/search
+```
+
+### Parameters - `Parameter`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| q | `String` | **optional** <p>General search (title, artist, creator, tags)</p> |
+| page | `Number` | **optional** <p>Page number (pagination, 100 per page)</p>_Default value: 1_<br> |
+| sort | `String` | **optional** <p>Sort field</p> |
+| order | `String` | **optional** <p>Sort order (asc/desc)</p>_Default value: desc_<br> |
+
+### Examples
+
+Example usage:
+
+```curl
+curl "https://mirror.nekoha.moe/api4/search?q=camellia&page=1"
+```
+
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| beatmapsets | `Object[]` | <p>List of beatmapsets with beatmaps array</p> |
+
+### Error response
+
+#### Error response - `Error 4xx`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| 500 |  | <p>Internal server error</p> |
+
+# <a name='File'></a> File
+
+## <a name='Download-a-beatmapset-(.osz-file)'></a> Download a beatmapset (.osz file)
+[Back to top](#top)
+
+```
+GET /api4/download/:id
+```
+
+### Parameters - `Parameter`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `Number` | <p>Beatmapset ID</p> |
+
+### Examples
+
+Example usage:
+
+```curl
+curl -OJ https://mirror.nekoha.moe/api4/download/12345
+```
+
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| .osz | `File` | <p>The beatmapset archive file</p> |
+
+### Error response
+
+#### Error response - `Error 4xx`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| 400 |  | <p>Invalid beatmapset ID (must be a positive number)</p> |
+| 404 |  | <p>Beatmapset not found, not downloaded, folder missing, or .osz file missing</p> |
+| 410 |  | <p>Beatmapset missing audio (not available for download)</p> |
+| 500 |  | <p>Internal server error</p> |
+
+# <a name='Stats'></a> Stats
+
+## <a name='Get-beatmap-mirror-statistics'></a> Get beatmap mirror statistics
+[Back to top](#top)
+
+```
+GET /api4/stats
+```
+
+### Examples
+
+Example usage:
+
+```curl
+curl https://mirror.nekoha.moe/api4/stats
+```
+
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| last_beatmapset_id | `Number` | <p>Last beatmapset ID in the database</p> |
+| beatmapset_count | `Number` | <p>Total number of beatmapsets</p> |
+| beatmap_count | `Number` | <p>Total number of beatmaps</p> |
+| ranked_count | `Number` | <p>Number of ranked beatmapsets</p> |
+| approved_count | `Number` | <p>Number of approved beatmapsets</p> |
+| loved_count | `Number` | <p>Number of loved beatmapsets</p> |
+| graveyard_count | `Number` | <p>Number of graveyard beatmapsets</p> |
+| pending_count | `Number` | <p>Number of pending beatmapsets</p> |
+| total_size | `Number` | <p>Total size of all .osz files (bytes)</p> |
+| bm_ranked_count | `Number` | <p>Number of ranked beatmaps</p> |
+| bm_approved_count | `Number` | <p>Number of approved beatmaps</p> |
+| bm_loved_count | `Number` | <p>Number of loved beatmaps</p> |
+| bm_graveyard_count | `Number` | <p>Number of graveyard beatmaps</p> |
+| bm_pending_count | `Number` | <p>Number of pending beatmaps</p> |
+| missing_beatmapsets | `Number` | <p>Number of missing beatmapsets</p> |
+| osu_bm_ranked_count | `Number` | <p>Ranked osu! beatmaps</p> |
+| osu_bm_approved_count | `Number` | <p>Approved osu! beatmaps</p> |
+| osu_bm_loved_count | `Number` | <p>Loved osu! beatmaps</p> |
+| osu_bm_graveyard_count | `Number` | <p>Graveyard osu! beatmaps</p> |
+| osu_bm_pending_count | `Number` | <p>Pending osu! beatmaps</p> |
+| taiko_bm_ranked_count | `Number` | <p>Ranked taiko beatmaps</p> |
+| taiko_bm_approved_count | `Number` | <p>Approved taiko beatmaps</p> |
+| taiko_bm_loved_count | `Number` | <p>Loved taiko beatmaps</p> |
+| taiko_bm_graveyard_count | `Number` | <p>Graveyard taiko beatmaps</p> |
+| taiko_bm_pending_count | `Number` | <p>Pending taiko beatmaps</p> |
+| fruits_bm_ranked_count | `Number` | <p>Ranked ctb beatmaps</p> |
+| fruits_bm_approved_count | `Number` | <p>Approved ctb beatmaps</p> |
+| fruits_bm_loved_count | `Number` | <p>Loved ctb beatmaps</p> |
+| fruits_bm_graveyard_count | `Number` | <p>Graveyard ctb beatmaps</p> |
+| fruits_bm_pending_count | `Number` | <p>Pending ctb beatmaps</p> |
+| mania_bm_ranked_count | `Number` | <p>Ranked mania beatmaps</p> |
+| mania_bm_approved_count | `Number` | <p>Approved mania beatmaps</p> |
+| mania_bm_loved_count | `Number` | <p>Loved mania beatmaps</p> |
+| mania_bm_graveyard_count | `Number` | <p>Graveyard mania beatmaps</p> |
+| mania_bm_pending_count | `Number` | <p>Pending mania beatmaps</p> |
+
+### Error response
+
+#### Error response - `Error 4xx`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| 404 |  | <p>No stats found</p> |
+| 500 |  | <p>Internal server error</p> |
+
