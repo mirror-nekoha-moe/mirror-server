@@ -289,7 +289,7 @@ app.get('/api4/search', async (req, res) => {
     if (where.length) baseQuery += ' WHERE ' + where.join(' AND ');
 
     let sortField = sort;
-    if (!sortField || !allowedSortFields.includes(sortField)) sortField = 'ranked';
+    if (!sortField || !allowedSortFields.includes(sortField)) sortField = 'updated';
     let sortClause = `ORDER BY ${sortField} ${order === 'asc' ? 'ASC' : 'DESC'}`;
 
     const query = `${baseQuery} ${sortClause} LIMIT ${limit} OFFSET ${offset}`;
