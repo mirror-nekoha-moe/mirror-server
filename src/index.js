@@ -34,105 +34,39 @@ app.use(express.json());
  * @api {get} /api4/stats Get beatmap mirror statistics
  * @apiName stats
  * @apiGroup Stats
- * @apiSuccess {Number} last_beatmapset_id Last beatmapset ID in the database
- * @apiSuccess {Number} beatmapset_count Total number of beatmapsets
- * @apiSuccess {Number} beatmap_count Total number of beatmaps
- * @apiSuccess {Number} ranked_count Number of ranked beatmapsets
- * @apiSuccess {Number} approved_count Number of approved beatmapsets
- * @apiSuccess {Number} loved_count Number of loved beatmapsets
- * @apiSuccess {Number} graveyard_count Number of graveyard beatmapsets
- * @apiSuccess {Number} pending_count Number of pending beatmapsets
- * @apiSuccess {Number} total_size Total size of all .osz files (bytes)
- * @apiSuccess {Number} bm_ranked_count Number of ranked beatmaps
- * @apiSuccess {Number} bm_approved_count Number of approved beatmaps
- * @apiSuccess {Number} bm_loved_count Number of loved beatmaps
- * @apiSuccess {Number} bm_graveyard_count Number of graveyard beatmaps
- * @apiSuccess {Number} bm_pending_count Number of pending beatmaps
- * @apiSuccess {Number} missing_beatmapsets Number of missing beatmapsets
- * @apiSuccess {Number} osu_bm_ranked_count Ranked osu! beatmaps
- * @apiSuccess {Number} osu_bm_approved_count Approved osu! beatmaps
- * @apiSuccess {Number} osu_bm_loved_count Loved osu! beatmaps
- * @apiSuccess {Number} osu_bm_graveyard_count Graveyard osu! beatmaps
- * @apiSuccess {Number} osu_bm_pending_count Pending osu! beatmaps
- * @apiSuccess {Number} taiko_bm_ranked_count Ranked taiko beatmaps
- * @apiSuccess {Number} taiko_bm_approved_count Approved taiko beatmaps
- * @apiSuccess {Number} taiko_bm_loved_count Loved taiko beatmaps
- * @apiSuccess {Number} taiko_bm_graveyard_count Graveyard taiko beatmaps
- * @apiSuccess {Number} taiko_bm_pending_count Pending taiko beatmaps
- * @apiSuccess {Number} fruits_bm_ranked_count Ranked ctb beatmaps
- * @apiSuccess {Number} fruits_bm_approved_count Approved ctb beatmaps
- * @apiSuccess {Number} fruits_bm_loved_count Loved ctb beatmaps
- * @apiSuccess {Number} fruits_bm_graveyard_count Graveyard ctb beatmaps
- * @apiSuccess {Number} fruits_bm_pending_count Pending ctb beatmaps
- * @apiSuccess {Number} mania_bm_ranked_count Ranked mania beatmaps
- * @apiSuccess {Number} mania_bm_approved_count Approved mania beatmaps
- * @apiSuccess {Number} mania_bm_loved_count Loved mania beatmaps
- * @apiSuccess {Number} mania_bm_graveyard_count Graveyard mania beatmaps
- * @apiSuccess {Number} mania_bm_pending_count Pending mania beatmaps
+ * @apiSuccess {Object} Stats Table Row
  * @apiError 404 No stats found
  * @apiError 500 Internal server error
  * @apiExample {curl} Example usage:
  *     curl https://mirror.nekoha.moe/api4/stats
  */
 app.get('/api4/stats', async (req, res) => {
-  try {
-    // Try cache first
-    const cacheKey = 'stats';
-    const cached = await redis.get(cacheKey);
-    if (cached) {
-      return res.json(JSON.parse(cached));
+    try {
+        // Try cache first
+        const cacheKey = 'stats';
+        const cached = await redis.get(cacheKey);
+
+        if (cached) {
+            return res.json(JSON.parse(cached));
+        }
+
+        // Not cached, query Postgres
+        const result = await pool.query(`SELECT * FROM ${process.env.TABLE_STATS}`);
+
+        if (result.rows.length === 0) {
+            const empty = [];
+            await redis.set(cacheKey, JSON.stringify(empty), 'EX', process.env.REDIS_CACHE_TIME);
+            return res.json(empty);
+        }
+
+        const stats = result.rows[0];
+        await redis.set(cacheKey, JSON.stringify(stats), 'EX', process.env.REDIS_CACHE_TIME);
+        res.json(stats);
+    } catch (err) {
+        console.error('Error fetching stats:', err);
+        res.setHeader('Content-Type', 'application/json');
+        res.status(500).json({ error: 'Failed to fetch stats' });
     }
-    // Not cached, query Postgres
-    const result = await pool.query(`SELECT * FROM ${process.env.TABLE_STATS}`);
-    let stats;
-    if (result.rows.length > 0) {
-      stats = result.rows[0];
-    } else {
-      stats = {
-        last_beatmapset_id: 0,
-        beatmapset_count: 0,
-        beatmap_count: 0,
-        ranked_count: 0,
-        approved_count: 0,
-        loved_count: 0,
-        graveyard_count: 0,
-        pending_count: 0,
-        total_size: 0,
-        bm_ranked_count: 0,
-        bm_approved_count: 0,
-        bm_loved_count: 0,
-        bm_graveyard_count: 0,
-        bm_pending_count: 0,
-        missing_beatmapsets: 0,
-        osu_bm_ranked_count: 0,
-				osu_bm_approved_count: 0,
-				osu_bm_loved_count: 0,
-				osu_bm_graveyard_count: 0,
-				osu_bm_pending_count: 0,
-				taiko_bm_ranked_count: 0,
-				taiko_bm_approved_count: 0,
-				taiko_bm_loved_count: 0,
-				taiko_bm_graveyard_count: 0,
-				taiko_bm_pending_count: 0,
-				fruits_bm_ranked_count: 0,
-				fruits_bm_approved_count: 0,
-				fruits_bm_loved_count: 0,
-				fruits_bm_graveyard_count: 0,
-				fruits_bm_pending_count: 0,
-				mania_bm_ranked_count: 0,
-				mania_bm_approved_count: 0,
-				mania_bm_loved_count: 0,
-				mania_bm_graveyard_count: 0,
-				mania_bm_pending_count: 0
-      };
-    }
-    await redis.set(cacheKey, JSON.stringify(stats), 'EX', process.env.REDIS_CACHE_TIME);
-    res.json(stats);
-  } catch (err) {
-  console.error('Error fetching stats:', err);
-  res.setHeader('Content-Type', 'application/json');
-  res.status(500).json({ error: 'Failed to fetch stats' });
-  }
 });
 
 
@@ -289,7 +223,7 @@ app.get('/api4/search', async (req, res) => {
     if (where.length) baseQuery += ' WHERE ' + where.join(' AND ');
 
     let sortField = sort;
-    if (!sortField || !allowedSortFields.includes(sortField)) sortField = 'updated';
+    if (!sortField || !allowedSortFields.includes(sortField)) sortField = 'last_updated';
     let sortClause = `ORDER BY ${sortField} ${order === 'asc' ? 'ASC' : 'DESC'}`;
 
     const query = `${baseQuery} ${sortClause} LIMIT ${limit} OFFSET ${offset}`;
@@ -471,7 +405,8 @@ app.get('/api4/beatmap/:id', async (req, res) => {
  * @apiSuccess {File} .osz The beatmapset archive file
  * @apiError 400 Invalid beatmapset ID (must be a positive number)
  * @apiError 404 Beatmapset not found, not downloaded, folder missing, or .osz file missing
- * @apiError 410 Beatmapset missing audio (not available for download)
+ * @apiError 410 Beatmapset missing (not available for download)
+ * @apiError 410 Beatmapset missing (dmca takedown)
  * @apiError 500 Internal server error
  * @apiExample {curl} Example usage:
  *     curl -OJ https://mirror.nekoha.moe/api4/download/12345
@@ -508,6 +443,12 @@ app.get('/api4/download/:id', async (req, res) => {
       res.setHeader('Content-Type', 'application/json');
       return res.status(410).json({ error: 'Beatmapset missing (not available for download)\nContact me to upload this mapset.' });
     }
+
+    if (beatmapset.dmca) {
+      res.setHeader('Content-Type', 'application/json');
+      return res.status(410).json({ error: 'Beatmapset missing (dmca takedown)\nContact me to upload this mapset.' });
+    }
+
     
     // Find the beatmapset folder inside STORAGE_DIR
     const storagePath = process.env.STORAGE_DIR;
