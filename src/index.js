@@ -34,7 +34,7 @@ app.use(express.json());
  * @api {get} /api4/stats Get beatmap mirror statistics
  * @apiName stats
  * @apiGroup Stats
- * @apiSuccess {Object} Stats Table Row
+ * @apiSuccess {Object} Stats Stats Table Row
  * @apiError 404 No stats found
  * @apiError 500 Internal server error
  * @apiExample {curl} Example usage:

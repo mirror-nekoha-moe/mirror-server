@@ -296,7 +296,7 @@ curl -OJ https://mirror.nekoha.moe/api4/download/12345
 |----------|------------|---------------------------------------|
 | 400 |  | <p>Invalid beatmapset ID (must be a positive number)</p> |
 | 404 |  | <p>Beatmapset not found, not downloaded, folder missing, or .osz file missing</p> |
-| 410 |  | <p>Beatmapset missing audio (not available for download)</p> |
+| 410 |  | <p>Beatmapset missing (not available for download)</p> |
 | 500 |  | <p>Internal server error</p> |
 
 # <a name='Stats'></a> Stats
@@ -322,41 +322,7 @@ curl https://mirror.nekoha.moe/api4/stats
 
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
-| last_beatmapset_id | `Number` | <p>Last beatmapset ID in the database</p> |
-| beatmapset_count | `Number` | <p>Total number of beatmapsets</p> |
-| beatmap_count | `Number` | <p>Total number of beatmaps</p> |
-| ranked_count | `Number` | <p>Number of ranked beatmapsets</p> |
-| approved_count | `Number` | <p>Number of approved beatmapsets</p> |
-| loved_count | `Number` | <p>Number of loved beatmapsets</p> |
-| graveyard_count | `Number` | <p>Number of graveyard beatmapsets</p> |
-| pending_count | `Number` | <p>Number of pending beatmapsets</p> |
-| total_size | `Number` | <p>Total size of all .osz files (bytes)</p> |
-| bm_ranked_count | `Number` | <p>Number of ranked beatmaps</p> |
-| bm_approved_count | `Number` | <p>Number of approved beatmaps</p> |
-| bm_loved_count | `Number` | <p>Number of loved beatmaps</p> |
-| bm_graveyard_count | `Number` | <p>Number of graveyard beatmaps</p> |
-| bm_pending_count | `Number` | <p>Number of pending beatmaps</p> |
-| missing_beatmapsets | `Number` | <p>Number of missing beatmapsets</p> |
-| osu_bm_ranked_count | `Number` | <p>Ranked osu! beatmaps</p> |
-| osu_bm_approved_count | `Number` | <p>Approved osu! beatmaps</p> |
-| osu_bm_loved_count | `Number` | <p>Loved osu! beatmaps</p> |
-| osu_bm_graveyard_count | `Number` | <p>Graveyard osu! beatmaps</p> |
-| osu_bm_pending_count | `Number` | <p>Pending osu! beatmaps</p> |
-| taiko_bm_ranked_count | `Number` | <p>Ranked taiko beatmaps</p> |
-| taiko_bm_approved_count | `Number` | <p>Approved taiko beatmaps</p> |
-| taiko_bm_loved_count | `Number` | <p>Loved taiko beatmaps</p> |
-| taiko_bm_graveyard_count | `Number` | <p>Graveyard taiko beatmaps</p> |
-| taiko_bm_pending_count | `Number` | <p>Pending taiko beatmaps</p> |
-| fruits_bm_ranked_count | `Number` | <p>Ranked ctb beatmaps</p> |
-| fruits_bm_approved_count | `Number` | <p>Approved ctb beatmaps</p> |
-| fruits_bm_loved_count | `Number` | <p>Loved ctb beatmaps</p> |
-| fruits_bm_graveyard_count | `Number` | <p>Graveyard ctb beatmaps</p> |
-| fruits_bm_pending_count | `Number` | <p>Pending ctb beatmaps</p> |
-| mania_bm_ranked_count | `Number` | <p>Ranked mania beatmaps</p> |
-| mania_bm_approved_count | `Number` | <p>Approved mania beatmaps</p> |
-| mania_bm_loved_count | `Number` | <p>Loved mania beatmaps</p> |
-| mania_bm_graveyard_count | `Number` | <p>Graveyard mania beatmaps</p> |
-| mania_bm_pending_count | `Number` | <p>Pending mania beatmaps</p> |
+| Stats | `Object` | <p>Stats Table Row</p> |
 
 ### Error response
 
