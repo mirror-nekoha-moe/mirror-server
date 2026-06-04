@@ -1,6 +1,6 @@
 {
   "name": "mirror-server",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "API server for nekoha mirror",
   "main": "src/worker.js",
   "type": "module",
@@ -12,6 +12,7 @@
   "dependencies": {
     "apidoc": "^1.2.0",
     "apidoc-markdown": "^7.3.2",
+    "archiver": "^8.0.0",
     "cluster": "^0.7.7",
     "cors": "^2.8.5",
     "dayjs": "^1.11.19",
@@ -20,7 +21,8 @@
     "express": "^4.21.2",
     "ioredis": "^5.8.2",
     "os": "^0.1.2",
-    "pg": "^8.11.3"
+    "pg": "^8.11.3",
+    "yauzl": "^3.3.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
