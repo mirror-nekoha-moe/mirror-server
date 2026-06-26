@@ -1,7 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import fs from 'fs';
-import path from 'path';
 
 import { app, pool, port } from './Constants.js';
 import ('./EndpointRegister.js');
