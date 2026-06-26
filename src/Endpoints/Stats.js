@@ -1,3 +1,4 @@
+import { app, pool, redis } from '../Constants.js';
 /**
  * @api {get} /api4/stats Get beatmap mirror statistics
  * @apiName stats

@@ -1,3 +1,4 @@
+import { app, pool, redis } from '../Constants.js';
 /**
  * @api {get} /api4/download-stats Get daily download statistics
  * @apiName download-stats

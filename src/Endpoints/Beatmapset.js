@@ -1,3 +1,4 @@
+import { app, pool, redis } from '../Constants.js';
 /**
  * @api {get} /api4/beatmapset/:id Get beatmapset metadata
  * @apiName beatmapset

@@ -1,3 +1,4 @@
+import { app, pool, redis } from '../Constants.js';
 /**
  * @api {get} /api4/osz/:id Get .osz file size for a beatmapset
  * @apiName osz
