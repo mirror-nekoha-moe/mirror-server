@@ -6,7 +6,6 @@ import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 import { createRequire } from 'module';
 
-
 const require = createRequire(import.meta.url);
 const yauzl = require('yauzl');
 const { ZipArchive } = require('archiver');

@@ -1,3 +1,4 @@
+import ('./Endpoints/ApiCallStats.js');
 import ('./Endpoints/Beatmap.js');
 import ('./Endpoints/Beatmapset.js');
 import ('./Endpoints/BeatmapsetFull.js');
