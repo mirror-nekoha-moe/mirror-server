@@ -1,12 +1,12 @@
 {
   "name": "mirror-server",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "API server for nekoha mirror",
-  "main": "src/worker.js",
+  "main": "src/Index.js",
   "type": "module",
   "scripts": {
-    "start": "node src/worker.js",
-    "dev": "nodemon src/worker.js",
+    "start": "node src/Index.js",
+    "dev": "nodemon src/Index.js",
     "doc": "npx apidoc-markdown -i src/ -o README.MD"
   },
   "dependencies": {

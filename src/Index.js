@@ -12,5 +12,5 @@ if (cluster.isPrimary) {
         cluster.fork();
     });
 } else {
-    await import('./index.js');
+    await import('./Bootstrap.js');
 }
