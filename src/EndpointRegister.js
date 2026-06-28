@@ -8,3 +8,7 @@ import ('./Endpoints/Osz.js');
 import ('./Endpoints/OszFull.js');
 import ('./Endpoints/Search.js');
 import ('./Endpoints/Stats.js');
+
+import ('./Endpoints/RequestCreate.js');
+import ('./Endpoints/RequestDetail.js');
+import ('./Endpoints/RequestList.js');
