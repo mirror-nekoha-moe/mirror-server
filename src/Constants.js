@@ -7,8 +7,8 @@ import { dirname, resolve } from 'path';
 import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
-const yauzl = require('yauzl');
-const { ZipArchive } = require('archiver');
+export const yauzl = require('yauzl');
+export const { ZipArchive } = require('archiver');
 
 dotenv.config({
     path: resolve(dirname(fileURLToPath(import.meta.url)),'.env')

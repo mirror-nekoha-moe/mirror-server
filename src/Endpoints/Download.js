@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
-import { app, pool } from '../Constants.js';
+
+import { app, pool, yauzl, ZipArchive } from '../Constants.js';
 /**
  * @api {get} /api4/download/:id Download a beatmapset (.osz file)
  * @apiName download
