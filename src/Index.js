@@ -1,13 +1,19 @@
 import cluster from 'cluster';
 import { cpus } from 'os';
+import { runMigrations } from './Migration/Database.js';
+import { pool } from './Constants.js';
 
 if (cluster.isPrimary) {
-    const numCPUs = cpus().length;
-    console.log(`Primary process ${process.pid} is running`);
-    for (let i = 0; i < numCPUs; i++) {
+    console.log(`Primary process ${process.pid}`);
+    
+    // Ensure Database Schema 
+    await runMigrations(pool);
+
+    for (let i = 0; i < cpus().length; i++) {
         cluster.fork();
     }
-    cluster.on('exit', (worker, code, signal) => {
+
+    cluster.on('exit', (worker) => {
         console.log(`Worker ${worker.process.pid} died, restarting...`);
         cluster.fork();
     });

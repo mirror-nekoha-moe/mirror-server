@@ -155,7 +155,7 @@ app.get('/api4/download/:id', async (req, res) => {
       // Track completed download stats
       res.on('finish', () => {
         pool.query(`
-          INSERT INTO download_stats (day, downloads, bytes_sent)
+          INSERT INTO downmigrateRequestBatchload_stats (day, downloads, bytes_sent)
           VALUES (CURRENT_DATE, 1, $1)
           ON CONFLICT (day) DO UPDATE
             SET downloads  = download_stats.downloads  + 1,
