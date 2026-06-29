@@ -12,3 +12,5 @@ import ('./Endpoints/Stats.js');
 import ('./Endpoints/RequestCreate.js');
 import ('./Endpoints/RequestDetail.js');
 import ('./Endpoints/RequestList.js');
+
+import ('./Endpoints/OszContent.js');

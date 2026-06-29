@@ -15,6 +15,7 @@ REST API documentation for mirror.nekoha.moe
   - [Search beatmapsets](#Search-beatmapsets)
 - [File](#File)
   - [Download a beatmapset (.osz file)](#Download-a-beatmapset-(.osz-file))
+  - [Get .osz archive contents](#Get-.osz-archive-contents)
 - [Request](#Request)
   - [Create beatmap request batch](#Create-beatmap-request-batch)
   - [Get full request details](#Get-full-request-details)
@@ -413,6 +414,76 @@ curl -OJ "https://mirror.nekoha.moe/api4/download/12345?noVideo=1"
 | 404 |  | <p>Beatmapset not found (not yet downloaded), or folder/.osz is missing</p> |
 | 410 |  | <p>Beatmapset unavailable (missing audio/DMCA takedown, NOTIFY ME TO FIX THIS SET)</p> |
 | 500 |  | <p>Internal server error, or archive/repack failure</p> |
+
+## <a name='Get-.osz-archive-contents'></a> Get .osz archive contents
+[Back to top](#top)
+
+<p>Returns json of files inside .osz archive.</p>
+
+```
+GET /api4/osz/:id/content
+```
+
+### Parameters - `Parameter`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `Number` | <p>Beatmapset ID</p> |
+
+### Examples
+
+Basic request:
+
+```curl
+curl -X GET https://mirror.nekoha.moe/api4/osz/12345/content
+```
+
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `Number` | <p>Beatmapset ID</p> |
+| file | `String` | <p>Name of the .osz file</p> |
+| entries | `Object[]` | <p>List of archive entries</p> |
+| entries.name | `String` | <p>File path inside archive</p> |
+| entries.directory | `Boolean` | <p>Whether entry is a directory</p> |
+| entries.compressedSizeBytes | `Number` | <p>Size of compressed data in bytes</p> |
+| entries.uncompressedSizeBytes | `Number` | <p>Size after extraction in bytes</p> |
+| entries.crc32 | `Number` | <p>CRC32 checksum of entry</p> |
+| entries.version | `Number` | <p>ZIP version required to extract entry</p> |
+
+### Success response example
+
+#### Success response example - `Success response:`
+
+```json
+{
+  "id": 12345,
+  "file": "song.osz",
+  "entries": [
+    {
+      "name": "Audio.mp3",
+      "directory": false,
+      "compressedSizeBytes": 1234567,
+      "uncompressedSizeBytes": 2345678,
+      "crc32": 123456789,
+      "version": 20
+    }
+  ]
+}
+```
+
+### Error response
+
+#### Error response - `Error 4xx`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| 400 |  | <p>Invalid beatmapset ID (must be a positive number)</p> |
+| 404 |  | <p>Beatmapset not found or no .osz file exists</p> |
+| 500 |  | <p>Invalid or corrupted ZIP archive, or internal server error</p> |
 
 # <a name='Request'></a> Request
 
