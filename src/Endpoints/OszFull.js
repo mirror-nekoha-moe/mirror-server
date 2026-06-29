@@ -16,15 +16,21 @@ app.get('/api4/oszFull', async (req, res) => {
   try {
     const cacheKey = `oszFull`;
     const cached = await redis.get(cacheKey);
+
     if (cached) {
-      return res.json(JSON.parse(cached));
+      res.setHeader('Content-Type', 'application/json');
+      return res.end(cached);
     }
+
     const result = await pool.query(
       `SELECT id, file_size FROM ${process.env.TABLE_BEATMAPSET}`
     );
+
     if (result.rows.length > 0) {
-      await redis.set(cacheKey, JSON.stringify(result.rows), 'EX', process.env.REDIS_CACHE_TIME);
-      res.json(result.rows);
+      const payload = JSON.stringify(result.rows);
+      await redis.set(cacheKey, payload, 'EX', process.env.REDIS_CACHE_TIME);
+      res.setHeader('Content-Type', 'application/json');
+      return res.end(payload);
     } else {
       res.setHeader('Content-Type', 'application/json');
       res.status(404).json({ error: 'No beatmapsets found (report this error)' });
