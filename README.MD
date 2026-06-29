@@ -1,5 +1,5 @@
 <a name="top"></a>
-# mirror.nekoha.moe v1.1.0
+# mirror.nekoha.moe v1.1.3
 
 REST API documentation for mirror.nekoha.moe
 
@@ -15,9 +15,14 @@ REST API documentation for mirror.nekoha.moe
   - [Search beatmapsets](#Search-beatmapsets)
 - [File](#File)
   - [Download a beatmapset (.osz file)](#Download-a-beatmapset-(.osz-file))
+- [Request](#Request)
+  - [Create beatmap request batch](#Create-beatmap-request-batch)
+  - [Get full request details](#Get-full-request-details)
+  - [List all beatmap requests](#List-all-beatmap-requests)
 - [Stats](#Stats)
   - [Get beatmap mirror statistics](#Get-beatmap-mirror-statistics)
   - [Get daily download statistics](#Get-daily-download-statistics)
+  - [Get osu! API call statistics (last 6 hours, per minute)](#Get-osu!-API-call-statistics-(last-6-hours,-per-minute))
 
 ___
 
@@ -409,6 +414,35 @@ curl -OJ "https://mirror.nekoha.moe/api4/download/12345?noVideo=1"
 | 410 |  | <p>Beatmapset unavailable (missing audio/DMCA takedown, NOTIFY ME TO FIX THIS SET)</p> |
 | 500 |  | <p>Internal server error, or archive/repack failure</p> |
 
+# <a name='Request'></a> Request
+
+## <a name='Create-beatmap-request-batch'></a> Create beatmap request batch
+[Back to top](#top)
+
+```
+POST /api4/request
+```
+
+## <a name='Get-full-request-details'></a> Get full request details
+[Back to top](#top)
+
+```
+GET /api4/request/:id
+```
+
+### Parameters - `Parameter`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `Number` | <p>request ID,</p> |
+
+## <a name='List-all-beatmap-requests'></a> List all beatmap requests
+[Back to top](#top)
+
+```
+GET /api4/request
+```
+
 # <a name='Stats'></a> Stats
 
 ## <a name='Get-beatmap-mirror-statistics'></a> Get beatmap mirror statistics
@@ -466,4 +500,19 @@ GET /api4/download-stats
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
 | rows | `Array` | <p>Array of { day, downloads, bytes_sent }</p> |
+
+## <a name='Get-osu!-API-call-statistics-(last-6-hours,-per-minute)'></a> Get osu! API call statistics (last 6 hours, per minute)
+[Back to top](#top)
+
+```
+GET /api4/api-call-stats
+```
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| v1 | `Array` | <p>Array of { minute, calls } for API v1</p> |
+| v2 | `Array` | <p>Array of { minute, calls } for API v2</p> |
 

@@ -4,6 +4,7 @@ import { app, pool } from '../Constants.js';
  * @api {get} /api4/request/:id Get full request details
  * @apiName getRequest
  * @apiGroup Request
+ * @apiParam {Number} id request ID, 
  */
 app.get('/api4/request/:id', async (req, res) => {
     try {
