@@ -1,13 +1,13 @@
 import { app, pool, redis } from '../Constants.js';
 
 /**
- * @api {get} /api4/api-call-stats Get osu! API call statistics (last 6 hours, per minute)
+ * @api {get} /api/api-call-stats Get osu! API call statistics (last 6 hours, per minute)
  * @apiName api-call-stats
  * @apiGroup Stats
  * @apiSuccess {Array} v1 Array of { minute, calls } for API v1
  * @apiSuccess {Array} v2 Array of { minute, calls } for API v2
  */
-app.get('/api4/api-call-stats', async (req, res) => {
+app.get('/api/api-call-stats', async (req, res) => {
   try {
     const cacheKey = 'api-call-stats';
     const cached = await redis.get(cacheKey);

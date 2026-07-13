@@ -3,7 +3,7 @@ import path from 'path';
 import { app, pool, yauzl, ZipArchive } from '../Constants.js';
 
 /**
- * @api {get} /api4/download/:id Download a beatmapset (.osz file)
+ * @api {get} /api/download/:id Download a beatmapset (.osz file)
  * @apiName download
  * @apiGroup File
  * @apiDescription Streams the .osz archive for the given beatmapset. If the beatmapset has a video and noVideo=1 is passed, the video files are stripped on-the-fly via zip repacking (yauzl + archiver). If the beatmapset has no video, the noVideo param is ignored and the file is streamed directly.
@@ -15,11 +15,11 @@ import { app, pool, yauzl, ZipArchive } from '../Constants.js';
  * @apiError 410 Beatmapset unavailable (missing audio/DMCA takedown, NOTIFY ME TO FIX THIS SET)
  * @apiError 500 Internal server error, or archive/repack failure
  * @apiExample {curl} Download with video (default):
- *     curl -OJ https://mirror.nekoha.moe/api4/download/12345
+ *     curl -OJ https://mirror.nekoha.moe/api/download/12345
  * @apiExample {curl} Download without video:
- *     curl -OJ "https://mirror.nekoha.moe/api4/download/12345?noVideo=1"
+ *     curl -OJ "https://mirror.nekoha.moe/api/download/12345?noVideo=1"
  */
-app.get('/api4/download/:id', async (req, res) => {
+app.get('/api/download/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const numericId = parseInt(id, 10);

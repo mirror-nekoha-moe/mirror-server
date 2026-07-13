@@ -1,6 +1,6 @@
 import { app, pool, redis } from '../Constants.js';
 /**
- * @api {get} /api4/search Search beatmapsets
+ * @api {get} /api/search Search beatmapsets
  * @apiName search
  * @apiGroup Beatmapset
  * @apiDescription Full beatmapset search with text, status, mode, difficulty, and metadata filters. Returns 100 results per page with embedded beatmaps array. Cached in Redis.
@@ -30,11 +30,11 @@ import { app, pool, redis } from '../Constants.js';
  * @apiSuccess {Object[]} beatmapsets List of beatmapsets, each with a nested beatmaps array
  * @apiError 500 Internal server error
  * @apiExample {curl} Basic search:
- *     curl "https://mirror.nekoha.moe/api4/search?q=camellia&status=ranked&page=1"
+ *     curl "https://mirror.nekoha.moe/api/search?q=camellia&status=ranked&page=1"
  * @apiExample {curl} With video filter:
- *     curl "https://mirror.nekoha.moe/api4/search?video=true&status=ranked"
+ *     curl "https://mirror.nekoha.moe/api/search?video=true&status=ranked"
  */
-app.get('/api4/search', async (req, res) => {
+app.get('/api/search', async (req, res) => {
   try {
     const queryParams = { ...req.query };
     const sortedKeys = Object.keys(queryParams).sort();

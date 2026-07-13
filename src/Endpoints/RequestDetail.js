@@ -1,12 +1,12 @@
 import { app, pool } from '../Constants.js';
 
 /**
- * @api {get} /api4/request/:id Get full request details
+ * @api {get} /api/request/:id Get full request details
  * @apiName getRequest
  * @apiGroup Request
  * @apiParam {Number} id request ID, 
  */
-app.get('/api4/request/:id', async (req, res) => {
+app.get('/api/request/:id', async (req, res) => {
     try {
         const id = parseInt(req.params.id, 10);
 

@@ -1,6 +1,6 @@
 import { app, pool, redis } from '../Constants.js';
 /**
- * @api {get} /api4/osz/:id Get .osz file size for a beatmapset
+ * @api {get} /api/osz/:id Get .osz file size for a beatmapset
  * @apiName osz
  * @apiGroup Beatmapset
  * @apiDescription Returns the stored file size (in bytes) of a beatmapset's .osz archive.
@@ -11,9 +11,9 @@ import { app, pool, redis } from '../Constants.js';
  * @apiError 404 Beatmapset not found
  * @apiError 500 Internal server error
  * @apiExample {curl} Example usage:
- *     curl https://mirror.nekoha.moe/api4/osz/12345
+ *     curl https://mirror.nekoha.moe/api/osz/12345
  */
-app.get('/api4/osz/:id', async (req, res) => {
+app.get('/api/osz/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const cacheKey = `osz:${id}`;

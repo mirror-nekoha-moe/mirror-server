@@ -24,7 +24,7 @@ import { app, pool, yauzl } from '../Constants.js';
  * @apiError 500 Invalid or corrupted ZIP archive, or internal server error
  *
  * @apiExample {curl} Basic request:
- *     curl -X GET https://mirror.nekoha.moe/api/osz/12345/content
+ *     curl -X GET https://mirror.nekoha.moe/api/osu/12345
  *
  * @apiSuccessExample {json} Success response:
  * {
@@ -42,31 +42,30 @@ import { app, pool, yauzl } from '../Constants.js';
  *   ]
  * }
  */
-app.get('/api/osz/:id/content', async (req, res) => {
+app.get('/api/osu/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const numericId = parseInt(id, 10);
 
     if (isNaN(numericId) || numericId < 0) {
       return res.status(400).json({
-        error: 'Invalid beatmapset ID'
+        error: 'Invalid beatmap ID'
       });
     }
 
     // fetch beatmapset
     const result = await pool.query(
-      `SELECT * FROM ${process.env.TABLE_BEATMAPSET} WHERE id = $1`,
+      `SELECT * FROM ${process.env.TABLE_BEATMAP} WHERE id = $1`,
       [numericId]
     );
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Beatmapset not found' });
+      return res.status(404).json({ error: 'Beatmap not found' });
     }
 
-    const beatmapset = result.rows[0];
+    const beatmap = result.rows[0];
 
-    const storagePath = process.env.STORAGE_DIR;
-    const folder = path.join(storagePath, String(numericId));
+    const folder = path.join(process.env.STORAGE_DIR, String(numericId));
 
     if (!fs.existsSync(folder) || !fs.lstatSync(folder).isDirectory()) {
       return res.status(404).json({ error: 'Beatmapset folder not found' });

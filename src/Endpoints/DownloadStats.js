@@ -1,12 +1,12 @@
 import { app, pool, redis } from '../Constants.js';
 /**
- * @api {get} /api4/download-stats Get daily download statistics
+ * @api {get} /api/download-stats Get daily download statistics
  * @apiName download-stats
  * @apiGroup Stats
  * @apiQuery {Number} [days=30] Number of past days to return
  * @apiSuccess {Array} rows Array of { day, downloads, bytes_sent }
  */
-app.get('/api4/download-stats', async (req, res) => {
+app.get('/api/download-stats', async (req, res) => {
   try {
     const days = Math.min(parseInt(req.query.days) || 30, 365);
     const cacheKey = `download-stats:${days}`;

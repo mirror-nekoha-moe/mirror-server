@@ -1,6 +1,6 @@
 import { app, pool, redis } from '../Constants.js';
 /**
- * @api {get} /api4/beatmap/:id Get beatmap metadata
+ * @api {get} /api/beatmap/:id Get beatmap metadata
  * @apiName beatmap
  * @apiGroup Beatmap
  * @apiDescription Returns full metadata for a single beatmap (difficulty). Cached in Redis.
@@ -32,9 +32,9 @@ import { app, pool, redis } from '../Constants.js';
  * @apiError 404 Beatmap not found
  * @apiError 500 Internal server error
  * @apiExample {curl} Example usage:
- *     curl https://mirror.nekoha.moe/api4/beatmap/123456
+ *     curl https://mirror.nekoha.moe/api/beatmap/123456
  */
-app.get('/api4/beatmap/:id', async (req, res) => {
+app.get('/api/beatmap/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const cacheKey = `beatmap:${id}`;

@@ -1,11 +1,11 @@
 import { app, pool } from '../Constants.js';
 
 /**
- * @api {get} /api4/request List all beatmap requests
+ * @api {get} /api/request List all beatmap requests
  * @apiName listRequests
  * @apiGroup Request
  */
-app.get('/api4/request', async (req, res) => {
+app.get('/api/request', async (req, res) => {
     try {
         const result = await pool.query(
             `

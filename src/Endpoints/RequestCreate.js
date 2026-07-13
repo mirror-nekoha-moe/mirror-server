@@ -1,11 +1,11 @@
 import { app, pool } from '../Constants.js';
 
 /**
- * @api {post} /api4/request Create beatmap request batch
+ * @api {post} /apirequest Create beatmap request batch
  * @apiName createRequest
  * @apiGroup Request
  */
-app.post('/api4/request', async (req, res) => {
+app.post('/api/request', async (req, res) => {
     const client = await pool.connect();
 
     let transactionStarted = false;

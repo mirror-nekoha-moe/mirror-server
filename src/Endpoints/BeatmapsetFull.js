@@ -1,10 +1,10 @@
 import { app, pool, redis } from '../Constants.js';
 
 /**
- * @api {get} /api4/beatmapsetFull/:id Get full beatmapset info (with beatmaps array)
+ * @api {get} /api/beatmapsetFull/:id Get full beatmapset info (with beatmaps array)
  * @apiName beatmapsetFull
  * @apiGroup Beatmapset
- * @apiDescription Same as /api4/beatmapset/:id but also includes a nested beatmaps array sorted by difficulty_rating ASC. Cached in Redis.
+ * @apiDescription Same as /api/beatmapset/:id but also includes a nested beatmaps array sorted by difficulty_rating ASC. Cached in Redis.
  * @apiParam {Number} id Beatmapset ID
  * @apiSuccess {Object}   beatmapset                            Full beatmapset metadata (all fields from /beatmapset/:id)
  * @apiSuccess {Object[]} beatmapset.beatmaps                   Array of beatmaps sorted by difficulty_rating ASC
@@ -25,9 +25,9 @@ import { app, pool, redis } from '../Constants.js';
  * @apiError 404 Beatmapset not found
  * @apiError 500 Internal server error
  * @apiExample {curl} Example usage:
- *     curl https://mirror.nekoha.moe/api4/beatmapsetFull/12345
+ *     curl https://mirror.nekoha.moe/api/beatmapsetFull/12345
  */
-app.get('/api4/beatmapsetFull/:id', async (req, res) => {
+app.get('/api/beatmapsetFull/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const cacheKey = `beatmapsetFull:${id}`;

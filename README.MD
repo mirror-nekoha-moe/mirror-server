@@ -1,5 +1,5 @@
 <a name="top"></a>
-# mirror.nekoha.moe v1.1.4
+# mirror.nekoha.moe v1.2.0
 
 REST API documentation for mirror.nekoha.moe
 
@@ -36,7 +36,7 @@ ___
 <p>Returns full metadata for a single beatmap (difficulty). Cached in Redis.</p>
 
 ```
-GET /api4/beatmap/:id
+GET /api/beatmap/:id
 ```
 
 ### Parameters - `Parameter`
@@ -50,7 +50,7 @@ GET /api4/beatmap/:id
 Example usage:
 
 ```curl
-curl https://mirror.nekoha.moe/api4/beatmap/123456
+curl https://mirror.nekoha.moe/api/beatmap/123456
 ```
 
 ### Success response
@@ -101,7 +101,7 @@ curl https://mirror.nekoha.moe/api4/beatmap/123456
 <p>Returns the stored file size (in bytes) of a beatmapset's .osz archive.</p>
 
 ```
-GET /api4/osz/:id
+GET /api/osz/:id
 ```
 
 ### Parameters - `Parameter`
@@ -115,7 +115,7 @@ GET /api4/osz/:id
 Example usage:
 
 ```curl
-curl https://mirror.nekoha.moe/api4/osz/12345
+curl https://mirror.nekoha.moe/api/osz/12345
 ```
 
 ### Success response
@@ -143,7 +143,7 @@ curl https://mirror.nekoha.moe/api4/osz/12345
 <p>Returns id + file_size for every beatmapset in the database.</p>
 
 ```
-GET /api4/oszFull
+GET /api/oszFull
 ```
 
 ### Examples
@@ -151,7 +151,7 @@ GET /api4/oszFull
 Example usage:
 
 ```curl
-curl https://mirror.nekoha.moe/api4/oszFull
+curl https://mirror.nekoha.moe/api/oszFull
 ```
 
 ### Success response
@@ -179,7 +179,7 @@ curl https://mirror.nekoha.moe/api4/oszFull
 <p>Returns full metadata for a single beatmapset. Does not include the beatmaps array, use beatmapsetFull for that. Cached in Redis.</p>
 
 ```
-GET /api4/beatmapset/:id
+GET /api/beatmapset/:id
 ```
 
 ### Parameters - `Parameter`
@@ -193,7 +193,7 @@ GET /api4/beatmapset/:id
 Example usage:
 
 ```curl
-curl https://mirror.nekoha.moe/api4/beatmapset/12345
+curl https://mirror.nekoha.moe/api/beatmapset/12345
 ```
 
 ### Success response
@@ -240,10 +240,10 @@ curl https://mirror.nekoha.moe/api4/beatmapset/12345
 ## <a name='Get-full-beatmapset-info-(with-beatmaps-array)'></a> Get full beatmapset info (with beatmaps array)
 [Back to top](#top)
 
-<p>Same as /api4/beatmapset/:id but also includes a nested beatmaps array sorted by difficulty_rating ASC. Cached in Redis.</p>
+<p>Same as /api/beatmapset/:id but also includes a nested beatmaps array sorted by difficulty_rating ASC. Cached in Redis.</p>
 
 ```
-GET /api4/beatmapsetFull/:id
+GET /api/beatmapsetFull/:id
 ```
 
 ### Parameters - `Parameter`
@@ -257,7 +257,7 @@ GET /api4/beatmapsetFull/:id
 Example usage:
 
 ```curl
-curl https://mirror.nekoha.moe/api4/beatmapsetFull/12345
+curl https://mirror.nekoha.moe/api/beatmapsetFull/12345
 ```
 
 ### Success response
@@ -298,7 +298,7 @@ curl https://mirror.nekoha.moe/api4/beatmapsetFull/12345
 <p>Full beatmapset search with text, status, mode, difficulty, and metadata filters. Returns 100 results per page with embedded beatmaps array. Cached in Redis.</p>
 
 ```
-GET /api4/search
+GET /api/search
 ```
 
 ### Parameters - `Parameter`
@@ -334,13 +334,13 @@ GET /api4/search
 Basic search:
 
 ```curl
-curl "https://mirror.nekoha.moe/api4/search?q=camellia&status=ranked&page=1"
+curl "https://mirror.nekoha.moe/api/search?q=camellia&status=ranked&page=1"
 ```
 
 With video filter:
 
 ```curl
-curl "https://mirror.nekoha.moe/api4/search?video=true&status=ranked"
+curl "https://mirror.nekoha.moe/api/search?video=true&status=ranked"
 ```
 
 ### Success response
@@ -367,7 +367,7 @@ curl "https://mirror.nekoha.moe/api4/search?video=true&status=ranked"
 <p>Streams the .osz archive for the given beatmapset. If the beatmapset has a video and noVideo=1 is passed, the video files are stripped on-the-fly via zip repacking (yauzl + archiver). If the beatmapset has no video, the noVideo param is ignored and the file is streamed directly.</p>
 
 ```
-GET /api4/download/:id
+GET /api/download/:id
 ```
 
 ### Parameters - `Parameter`
@@ -387,13 +387,13 @@ GET /api4/download/:id
 Download with video (default):
 
 ```curl
-curl -OJ https://mirror.nekoha.moe/api4/download/12345
+curl -OJ https://mirror.nekoha.moe/api/download/12345
 ```
 
 Download without video:
 
 ```curl
-curl -OJ "https://mirror.nekoha.moe/api4/download/12345?noVideo=1"
+curl -OJ "https://mirror.nekoha.moe/api/download/12345?noVideo=1"
 ```
 
 ### Success response
@@ -421,7 +421,7 @@ curl -OJ "https://mirror.nekoha.moe/api4/download/12345?noVideo=1"
 <p>Returns json of files inside .osz archive.</p>
 
 ```
-GET /api4/osz/:id/content
+GET /api/osz/:id/content
 ```
 
 ### Parameters - `Parameter`
@@ -435,7 +435,7 @@ GET /api4/osz/:id/content
 Basic request:
 
 ```curl
-curl -X GET https://mirror.nekoha.moe/api4/osz/12345/content
+curl -X GET https://mirror.nekoha.moe/api/osu/12345
 ```
 
 ### Success response
@@ -491,14 +491,14 @@ curl -X GET https://mirror.nekoha.moe/api4/osz/12345/content
 [Back to top](#top)
 
 ```
-POST /api4/request
+POST /apirequest
 ```
 
 ## <a name='Get-full-request-details'></a> Get full request details
 [Back to top](#top)
 
 ```
-GET /api4/request/:id
+GET /api/request/:id
 ```
 
 ### Parameters - `Parameter`
@@ -511,7 +511,7 @@ GET /api4/request/:id
 [Back to top](#top)
 
 ```
-GET /api4/request
+GET /api/request
 ```
 
 # <a name='Stats'></a> Stats
@@ -522,7 +522,7 @@ GET /api4/request
 <p>Returns stats table row.</p>
 
 ```
-GET /api4/stats
+GET /api/stats
 ```
 
 ### Examples
@@ -530,7 +530,7 @@ GET /api4/stats
 Example usage:
 
 ```curl
-curl https://mirror.nekoha.moe/api4/stats
+curl https://mirror.nekoha.moe/api/stats
 ```
 
 ### Success response
@@ -556,7 +556,7 @@ curl https://mirror.nekoha.moe/api4/stats
 [Back to top](#top)
 
 ```
-GET /api4/download-stats
+GET /api/download-stats
 ```
 
 ### Query Parameters
@@ -576,7 +576,7 @@ GET /api4/download-stats
 [Back to top](#top)
 
 ```
-GET /api4/api-call-stats
+GET /api/api-call-stats
 ```
 ### Success response
 

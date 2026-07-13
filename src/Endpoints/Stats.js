@@ -1,6 +1,6 @@
 import { app, pool, redis } from '../Constants.js';
 /**
- * @api {get} /api4/stats Get beatmap mirror statistics
+ * @api {get} /api/stats Get beatmap mirror statistics
  * @apiName stats
  * @apiGroup Stats
  * @apiDescription Returns stats table row.
@@ -10,9 +10,9 @@ import { app, pool, redis } from '../Constants.js';
  * @apiError 404 No stats found
  * @apiError 500 Internal server error
  * @apiExample {curl} Example usage:
- *     curl https://mirror.nekoha.moe/api4/stats
+ *     curl https://mirror.nekoha.moe/api/stats
  */
-app.get('/api4/stats', async (req, res) => {
+app.get('/api/stats', async (req, res) => {
     try {
         // Try cache first
         const cacheKey = 'stats';
