@@ -1,7 +1,6 @@
 import ('./Endpoints/ApiCallStats.js');
 import ('./Endpoints/Beatmap.js');
 import ('./Endpoints/Beatmapset.js');
-import ('./Endpoints/BeatmapsetFull.js');
 import ('./Endpoints/Download.js');
 import ('./Endpoints/DownloadStats.js');
 import ('./Endpoints/Osz.js');
