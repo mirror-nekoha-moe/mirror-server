@@ -1,4 +1,4 @@
-import { toRanked, toNum, toIso, toGenre, toLanguage } from 'helpers.js'
+import { toRanked, toNum, toIso, toGenre, toLanguage } from './helpers.js'
 
 export function serializeBeatmap(row) {
     return {
