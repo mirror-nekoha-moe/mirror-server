@@ -1,5 +1,5 @@
 <a name="top"></a>
-# mirror.nekoha.moe v1.2.0
+# mirror.nekoha.moe v1.3.0
 
 REST API documentation for mirror.nekoha.moe
 
@@ -11,7 +11,6 @@ REST API documentation for mirror.nekoha.moe
   - [Get .osz file size for a beatmapset](#Get-.osz-file-size-for-a-beatmapset)
   - [Get all beatmapset .osz file sizes](#Get-all-beatmapset-.osz-file-sizes)
   - [Get beatmapset metadata](#Get-beatmapset-metadata)
-  - [Get full beatmapset info (with beatmaps array)](#Get-full-beatmapset-info-(with-beatmaps-array))
   - [Search beatmapsets](#Search-beatmapsets)
 - [File](#File)
   - [Download a beatmapset (.osz file)](#Download-a-beatmapset-(.osz-file))
@@ -33,7 +32,7 @@ ___
 ## <a name='Get-beatmap-metadata'></a> Get beatmap metadata
 [Back to top](#top)
 
-<p>Returns full metadata for a single beatmap (difficulty). Cached in Redis.</p>
+<p>Returns full metadata for a single beatmap. Cached in Redis.</p>
 
 ```
 GET /api/beatmap/:id
@@ -59,29 +58,35 @@ curl https://mirror.nekoha.moe/api/beatmap/123456
 
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
-| id | `Number` | <p>Beatmap ID</p> |
 | beatmapset_id | `Number` | <p>Parent beatmapset ID</p> |
-| version | `String` | <p>Difficulty name</p> |
-| mode | `String` | <p>Game mode (osu/taiko/fruits/mania)</p> |
 | difficulty_rating | `Number` | <p>Star rating</p> |
-| ar | `Number` | <p>Approach rate</p> |
-| cs | `Number` | <p>Circle size</p> |
-| accuracy | `Number` | <p>Overall difficulty (OD)</p> |
-| drain | `Number` | <p>HP drain rate</p> |
-| bpm | `Number` | <p>BPM</p> |
+| id | `Number` | <p>Beatmap ID</p> |
+| lazer_only | `Boolean` | <p>Whether this beatmap is only available in osu!lazer</p> |
+| mode | `String` | <p>Game mode (osu/taiko/fruits/mania)</p> |
+| status | `String` | <p>Ranked status</p> |
 | total_length | `Number` | <p>Total length in seconds</p> |
-| hit_length | `Number` | <p>Drain length in seconds</p> |
+| user_id | `Number` | <p>UserID of the beatmap creator</p> |
+| version | `String` | <p>Difficulty name</p> |
+| accuracy | `Number` | <p>Overall difficulty (OD)</p> |
+| ar | `Number` | <p>Approach rate</p> |
+| bpm | `Number` | <p>BPM</p> |
+| convert | `Boolean` | <p>Whether this is a converted difficulty</p> |
 | count_circles | `Number` | <p>Hit circle count</p> |
 | count_sliders | `Number` | <p>Slider count</p> |
 | count_spinners | `Number` | <p>Spinner count</p> |
-| playcount | `Number` | <p>Play count for this difficulty</p> |
-| passcount | `Number` | <p>Pass count for this difficulty</p> |
-| status | `String` | <p>Ranked status</p> |
-| is_scoreable | `Boolean` | <p>Whether scores can be submitted</p> |
-| convert | `Boolean` | <p>Whether this is a converted difficulty</p> |
-| checksum | `String` | <p>MD5 checksum of the .osu file</p> |
-| last_updated | `String` | <p>ISO date of last update</p> |
+| cs | `Number` | <p>Circle size</p> |
 | deleted_at | `String` | <p>ISO date when deleted (null if not deleted)</p> |
+| drain | `Number` | <p>HP drain rate</p> |
+| hit_length | `Number` | <p>Drain length in seconds</p> |
+| is_scoreable | `Boolean` | <p>Whether scores can be submitted</p> |
+| last_updated | `String` | <p>ISO date of last update</p> |
+| mode_int | `Number` | <p>Game mode (0 osu/1 taiko/2 fruits/3 mania)</p> |
+| passcount | `Number` | <p>Pass count for this difficulty</p> |
+| playcount | `Number` | <p>Play count for this difficulty</p> |
+| ranked | `Number` | <p>Ranked status in integer</p> |
+| url | `String` | <p>URL to beatmap</p> |
+| checksum | `String` | <p>MD5 checksum of the .osu file</p> |
+| max_combo | `Number` | <p>Max Combo</p> |
 
 ### Error response
 
@@ -176,7 +181,7 @@ curl https://mirror.nekoha.moe/api/oszFull
 ## <a name='Get-beatmapset-metadata'></a> Get beatmapset metadata
 [Back to top](#top)
 
-<p>Returns full metadata for a single beatmapset. Does not include the beatmaps array, use beatmapsetFull for that. Cached in Redis.</p>
+<p>Returns full metadata for a single beatmapset. Cached in Redis.</p>
 
 ```
 GET /api/beatmapset/:id
@@ -202,85 +207,65 @@ curl https://mirror.nekoha.moe/api/beatmapset/12345
 
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
-| id | `Number` | <p>Beatmapset ID</p> |
-| title | `String` | <p>Song title</p> |
+| anime_cover | `Boolean` | <p>Whether the cover uses anime art style</p> |
 | artist | `String` | <p>Song artist</p> |
-| creator | `String` | <p>Mapper username</p> |
-| user_id | `Number` | <p>Mapper user ID</p> |
-| status | `String` | <p>Ranked status (ranked/approved/loved/qualified/pending/wip/graveyard)</p> |
+| artist_unicode | `String` | <p>Song artist (unicode)</p> |
 | bpm | `Number` | <p>BPM</p> |
-| video | `Boolean` | <p>Whether the beatmapset includes a video</p> |
-| storyboard | `Boolean` | <p>Whether the beatmapset includes a storyboard</p> |
-| nsfw | `Boolean` | <p>Whether the beatmapset is marked NSFW</p> |
+| creator | `String` | <p>Mapper username</p> |
+| deleted_at | `String` | <p>ISO date when deleted</p> |
+| description | `Object` | <p>Description object</p> |
+| description.description | `String` | <p>Beatmapset description</p> |
 | favourite_count | `Number` | <p>Number of favourites</p> |
-| play_count | `Number` | <p>Total play count</p> |
-| file_size | `Number` | <p>.osz file size in bytes</p> |
-| preview_url | `String` | <p>Audio preview URL (protocol-relative, e.g. //b.ppy.sh/preview/12345.mp3)</p> |
-| tags | `String` | <p>Space-separated tags</p> |
-| source | `String` | <p>Song source</p> |
 | genre_id | `Number` | <p>Genre ID</p> |
-| language_id | `Number` | <p>Language ID</p> |
-| submitted_date | `String` | <p>ISO date when the beatmapset was submitted</p> |
-| ranked_date | `String` | <p>ISO date when the beatmapset was ranked (null if not ranked)</p> |
-| last_updated | `String` | <p>ISO date of last update</p> |
-| downloaded | `Boolean` | <p>Whether the .osz file has been downloaded to the mirror</p> |
-| missing_audio | `Boolean` | <p>Whether the file is unavailable due to missing audio</p> |
-| dmca | `Boolean` | <p>Whether the file is unavailable due to DMCA</p> |
-
-### Error response
-
-#### Error response - `Error 4xx`
-
-| Name     | Type       | Description                           |
-|----------|------------|---------------------------------------|
-| 400 |  | <p>Invalid beatmapset ID (must be a positive number)</p> |
-| 404 |  | <p>Beatmapset not found</p> |
-| 500 |  | <p>Internal server error</p> |
-
-## <a name='Get-full-beatmapset-info-(with-beatmaps-array)'></a> Get full beatmapset info (with beatmaps array)
-[Back to top](#top)
-
-<p>Same as /api/beatmapset/:id but also includes a nested beatmaps array sorted by difficulty_rating ASC. Cached in Redis.</p>
-
-```
-GET /api/beatmapsetFull/:id
-```
-
-### Parameters - `Parameter`
-
-| Name     | Type       | Description                           |
-|----------|------------|---------------------------------------|
+| genre | `Object` | <p>Genre object</p> |
+| genre.id | `Number` | <p>Genre ID</p> |
+| genre.name | `String` | <p>Genre name</p> |
 | id | `Number` | <p>Beatmapset ID</p> |
-
-### Examples
-
-Example usage:
-
-```curl
-curl https://mirror.nekoha.moe/api/beatmapsetFull/12345
-```
-
-### Success response
-
-#### Success response - `Success 200`
-
-| Name     | Type       | Description                           |
-|----------|------------|---------------------------------------|
-| beatmapset | `Object` | <p>Full beatmapset metadata (all fields from /beatmapset/:id)</p> |
-| beatmapset.beatmaps | `Object[]` | <p>Array of beatmaps sorted by difficulty_rating ASC</p> |
-| beatmapset.beatmaps.id | `Number` | <p>Beatmap ID</p> |
-| beatmapset.beatmaps.version | `String` | <p>Difficulty name</p> |
-| beatmapset.beatmaps.mode | `String` | <p>Game mode (osu/taiko/fruits/mania)</p> |
-| beatmapset.beatmaps.difficulty_rating | `Number` | <p>Star rating</p> |
-| beatmapset.beatmaps.ar | `Number` | <p>Approach rate</p> |
-| beatmapset.beatmaps.cs | `Number` | <p>Circle size</p> |
-| beatmapset.beatmaps.accuracy | `Number` | <p>Overall difficulty</p> |
-| beatmapset.beatmaps.drain | `Number` | <p>HP drain rate</p> |
-| beatmapset.beatmaps.bpm | `Number` | <p>BPM</p> |
-| beatmapset.beatmaps.total_length | `Number` | <p>Total length in seconds</p> |
-| beatmapset.beatmaps.hit_length | `Number` | <p>Drain length in seconds</p> |
-| beatmapset.beatmaps.status | `String` | <p>Ranked status</p> |
-| beatmapset.beatmaps.checksum | `String` | <p>MD5 checksum of the .osu file</p> |
+| is_scoreable | `Boolean` | <p>Whether scores can be submitted</p> |
+| language_id | `Number` | <p>Language ID</p> |
+| language | `Object` | <p>Language object</p> |
+| language.id | `Number` | <p>Language ID</p> |
+| language.name | `String` | <p>Language name</p> |
+| last_updated | `String` | <p>ISO date of last update</p> |
+| more_information | `String` | <p>Additional information</p> |
+| nsfw | `Boolean` | <p>Whether the beatmapset is marked NSFW</p> |
+| offset | `Number` | <p>Audio offset</p> |
+| play_count | `Number` | <p>Total play count</p> |
+| preview_url | `String` | <p>Audio preview URL</p> |
+| ranked | `Number` | <p>Ranked status in integer</p> |
+| ranked_date | `String` | <p>ISO date when ranked</p> |
+| rating | `Number` | <p>Average map rating</p> |
+| source | `String` | <p>Source</p> |
+| spotlight | `Boolean` | <p>Whether this is a spotlight beatmapset</p> |
+| status | `String` | <p>Ranked status as string</p> |
+| storyboard | `Boolean` | <p>Whether the beatmapset includes a storyboard</p> |
+| submitted_date | `String` | <p>ISO date when submitted</p> |
+| tags | `String` | <p>Space-separated tags</p> |
+| title | `String` | <p>Song title</p> |
+| title_unicode | `String` | <p>Song title (unicode)</p> |
+| user_id | `Number` | <p>Mapper user ID</p> |
+| video | `Boolean` | <p>Whether the beatmapset includes a video</p> |
+| covers | `Object` | <p>Cover image URLs</p> |
+| covers.cover | `String` |  |
+| covers.cover@2x | `String` |  |
+| covers.card | `String` |  |
+| covers.card@2x | `String` |  |
+| covers.list | `String` |  |
+| covers.list@2x | `String` |  |
+| covers.slimcover | `String` |  |
+| covers.slimcover@2x | `String` |  |
+| availability | `Object` | <p>// download_disabled is not reliable, mirror stores its own state</p> |
+| availability.more_information | `String` |  |
+| beatmaps | `Object[]` | <p>Array of beatmaps in this set (see /api/beatmap/:id for structure)</p> |
+| mirror | `Object` | <p>Mirror-only data</p> |
+| mirror.beatmap_count | `Number` |  |
+| mirror.downloaded | `Boolean` |  |
+| mirror.download_disabled | `Boolean` |  |
+| mirror.file_size | `Number` |  |
+| mirror.mode_osu_count | `Number` |  |
+| mirror.mode_taiko_count | `Number` |  |
+| mirror.mode_fruits_count | `Number` |  |
+| mirror.mode_mania_count | `Number` |  |
 
 ### Error response
 
