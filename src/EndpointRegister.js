@@ -15,3 +15,5 @@ import ('./Endpoints/RequestList.js');
 import ('./Endpoints/OszContent.js');
 
 import ('./Endpoints/OsuFile.js');
+
+import ('./Endpoints/AudioPreview.js');
