@@ -1,7 +1,7 @@
 FROM node:20-alpine
 
 # Install curl for Podman REST API access
-RUN apk add --no-cache curl
+RUN apk add --no-cache curl ffmpeg
 
 # Set working directory
 WORKDIR /app
