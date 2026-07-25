@@ -13,3 +13,5 @@ import ('./Endpoints/RequestDetail.js');
 import ('./Endpoints/RequestList.js');
 
 import ('./Endpoints/OszContent.js');
+
+import ('./Endpoints/OsuFile.js');

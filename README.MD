@@ -1,5 +1,5 @@
 <a name="top"></a>
-# mirror.nekoha.moe v1.3.0
+# mirror.nekoha.moe v1.3.1
 
 REST API documentation for mirror.nekoha.moe
 
@@ -14,6 +14,7 @@ REST API documentation for mirror.nekoha.moe
   - [Search beatmapsets](#Search-beatmapsets)
 - [File](#File)
   - [Download a beatmapset (.osz file)](#Download-a-beatmapset-(.osz-file))
+  - [Get .osu file for a beatmap](#Get-.osu-file-for-a-beatmap)
   - [Get .osz archive contents](#Get-.osz-archive-contents)
 - [Request](#Request)
   - [Create beatmap request batch](#Create-beatmap-request-batch)
@@ -400,6 +401,47 @@ curl -OJ "https://mirror.nekoha.moe/api/download/12345?noVideo=1"
 | 410 |  | <p>Beatmapset unavailable (missing audio/DMCA takedown, NOTIFY ME TO FIX THIS SET)</p> |
 | 500 |  | <p>Internal server error, or archive/repack failure</p> |
 
+## <a name='Get-.osu-file-for-a-beatmap'></a> Get .osu file for a beatmap
+[Back to top](#top)
+
+<p>Returns the raw .osu file content for a beatmap.</p>
+
+```
+GET /api/osu/:id
+```
+
+### Parameters - `Parameter`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `Number` | <p>Beatmap ID</p> |
+
+### Examples
+
+Basic request:
+
+```curl
+curl -X GET https://mirror.nekoha.moe/api/osu/4753900
+```
+
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| - | `String` | <p>Raw .osu file content (text/plain)</p> |
+
+### Error response
+
+#### Error response - `Error 4xx`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| 400 |  | <p>Invalid beatmap ID (must be a positive number)</p> |
+| 404 |  | <p>.osu file not found for this beatmap</p> |
+| 500 |  | <p>Invalid or corrupted zip archive</p> |
+
 ## <a name='Get-.osz-archive-contents'></a> Get .osz archive contents
 [Back to top](#top)
 
@@ -420,7 +462,7 @@ GET /api/osz/:id/content
 Basic request:
 
 ```curl
-curl -X GET https://mirror.nekoha.moe/api/osu/12345
+curl -X GET https://mirror.nekoha.moe/api/osz/12345/content
 ```
 
 ### Success response

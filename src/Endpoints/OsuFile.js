@@ -1,137 +1,139 @@
 import fs from 'fs';
 import path from 'path';
-
+import crypto from 'crypto';
 import { app, pool, yauzl } from '../Constants.js';
 
+function extractBeatmapId(osuFileText) {
+    const match = osuFileText.match(/^BeatmapID:\s*(\d+)/m);
+    return match ? parseInt(match[1], 10) : null;
+}
+
 /**
- * @api {get} /api/osz/:id/content Get .osz archive contents
- * @apiName osz-content
+ * @api {get} /api/osu/:id Get .osu file for a beatmap
+ * @apiName osu-file
  * @apiGroup File
- * @apiDescription Returns json of files inside .osz archive.
- * @apiParam {Number} id Beatmapset ID
- * @apiSuccess {Number} id Beatmapset ID
- * @apiSuccess {String} file Name of the .osz file
- * @apiSuccess {Object[]} entries List of archive entries
- * @apiSuccess {String} entries.name File path inside archive
- * @apiSuccess {Boolean} entries.directory Whether entry is a directory
- * @apiSuccess {Number} entries.compressedSizeBytes Size of compressed data in bytes
- * @apiSuccess {Number} entries.uncompressedSizeBytes Size after extraction in bytes
- * @apiSuccess {Number} entries.crc32 CRC32 checksum of entry
- * @apiSuccess {Number} entries.version ZIP version required to extract entry
- *
- * @apiError 400 Invalid beatmapset ID (must be a positive number)
- * @apiError 404 Beatmapset not found or no .osz file exists
- * @apiError 500 Invalid or corrupted ZIP archive, or internal server error
- *
+ * @apiDescription Returns the raw .osu file content for a beatmap.
+ * @apiParam {Number} id Beatmap ID
+ * @apiSuccess {String} - Raw .osu file content (text/plain)
+ * @apiError 400 Invalid beatmap ID (must be a positive number)
+ * @apiError 404 .osu file not found for this beatmap
+ * @apiError 500 Invalid or corrupted zip archive
+ * @apiError 500 Internal server error
  * @apiExample {curl} Basic request:
- *     curl -X GET https://mirror.nekoha.moe/api/osu/12345
- *
- * @apiSuccessExample {json} Success response:
- * {
- *   "id": 12345,
- *   "file": "song.osz",
- *   "entries": [
- *     {
- *       "name": "Audio.mp3",
- *       "directory": false,
- *       "compressedSizeBytes": 1234567,
- *       "uncompressedSizeBytes": 2345678,
- *       "crc32": 123456789,
- *       "version": 20
- *     }
- *   ]
- * }
+ *     curl -X GET https://mirror.nekoha.moe/api/osu/4753900
  */
 app.get('/api/osu/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const numericId = parseInt(id, 10);
+    try {
+        const { id } = req.params;
+        const numericId = parseInt(id, 10);
 
-    if (isNaN(numericId) || numericId < 0) {
-      return res.status(400).json({
-        error: 'Invalid beatmap ID'
-      });
-    }
+        if (isNaN(numericId) || numericId < 0) {
+            return res.status(400).json({ error: 'Invalid beatmap ID' });
+        }
 
-    // fetch beatmapset
-    const result = await pool.query(
-      `SELECT * FROM ${process.env.TABLE_BEATMAP} WHERE id = $1`,
-      [numericId]
-    );
+        const result = await pool.query(
+            `SELECT * FROM ${process.env.TABLE_BEATMAP} WHERE id = $1`,
+            [numericId]
+        );
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Beatmap not found' });
-    }
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Beatmap not found' });
+        }
 
-    const beatmap = result.rows[0];
+        const folder = path.join(process.env.STORAGE_DIR, String(result.rows[0].beatmapset_id));
 
-    const folder = path.join(process.env.STORAGE_DIR, String(numericId));
+        if (!fs.existsSync(folder) || !fs.lstatSync(folder).isDirectory()) {
+            return res.status(404).json({ error: 'Beatmapset folder not found' });
+        }
 
-    if (!fs.existsSync(folder) || !fs.lstatSync(folder).isDirectory()) {
-      return res.status(404).json({ error: 'Beatmapset folder not found' });
-    }
+        // Get largest .osz file
+        const files = fs.readdirSync(folder);
+        const oszFile = files.filter(f => f.endsWith('.osz')).sort((a, b) => 
+            fs.statSync(path.join(folder, b)).size - fs.statSync(path.join(folder, a)).size
+        )[0];
 
-    const files = fs.readdirSync(folder);
-    const oszFile = files
-      .filter(f => f.endsWith('.osz'))
-      .sort((a, b) =>
-        fs.statSync(path.join(folder, b)).size -
-        fs.statSync(path.join(folder, a)).size
-      )[0];
+        if (!oszFile) {
+            return res.status(404).json({ error: 'No .osz file found' });
+        }
 
-    if (!oszFile) {
-      return res.status(404).json({ error: 'No .osz file found' });
-    }
+        const filePath = path.join(folder, oszFile);
 
-    const filePath = path.join(folder, oszFile);
+        yauzl.open(filePath, { lazyEntries: true }, (err, zipfile) => {
+            if (err || !zipfile) {
+                return res.status(500).json({ error: 'Invalid or corrupted zip archive' });
+            }
 
-    // OPEN ZIP
-    yauzl.open(filePath, { lazyEntries: true }, (err, zipfile) => {
-      if (err || !zipfile) {
-        return res.status(500).json({
-          error: 'Invalid or corrupted zip archive'
+            const osuEntries = [];
+            let responded = false;
+
+            zipfile.readEntry();
+            zipfile.on('entry', entry => {
+                const isDirectory = /\/$/.test(entry.fileName);
+
+                if (isDirectory || !entry.fileName.endsWith('.osu')) {
+                    zipfile.readEntry();
+                    return;
+                }
+
+                zipfile.openReadStream(entry, (err, readStream) => {
+                    if (err || !readStream) {
+                        zipfile.readEntry();
+                        return;
+                    }
+
+                    const chunks = [];
+                    readStream.on('data', chunk => chunks.push(chunk));
+                    readStream.on('end', () => {
+                        const buffer = Buffer.concat(chunks);
+                        const md5 = crypto.createHash('md5').update(buffer).digest('hex');
+                        osuEntries.push({
+                            buffer,
+                            md5,
+                            name: entry.fileName
+                        });
+                        zipfile.readEntry();
+                    });
+                    readStream.on('error', () => {
+                        zipfile.readEntry();
+                    });
+                });
+            });
+
+            zipfile.on('end', () => {
+                if (responded)
+                    return;
+
+                // check md5 hash
+                let match = osuEntries.find(e => e.md5 === result.rows[0].checksum);
+
+                // get BeatmapID inside .osu file
+                if (!match) {
+                    match = osuEntries.find(e => {
+                        const text = e.buffer.toString('utf-8');
+                        return extractBeatmapId(text) === numericId;
+                    });
+                }
+
+                if (match) {
+                    responded = true;
+                    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+                    return res.send(match.buffer);
+                }
+
+                res.status(404).json({ error: '.osu file not found for this beatmap' });
+            });
+
+            zipfile.on('error', err => {
+                console.error('zip read error:', err);
+                if (!responded) {
+                    responded = true;
+                    res.status(500).json({ error: 'Invalid or corrupted zip archive' });
+                }
+            });
         });
-      }
 
-      const entries = [];
-
-      zipfile.readEntry();
-
-      zipfile.on('entry', entry => {
-        const isDirectory = /\/$/.test(entry.fileName);
-
-        entries.push({
-          name: entry.fileName,
-          directory: isDirectory,
-          compressedSizeBytes: entry.compressedSize,
-          uncompressedSizeBytes: entry.uncompressedSize,
-          crc32: entry.crc32,
-          version: entry.versionNeededToExtract
-        });
-
-        zipfile.readEntry();
-      });
-
-      zipfile.on('end', () => {
-        return res.json({
-          id: numericId,
-          file: oszFile,
-          entries
-        });
-      });
-
-      zipfile.on('error', err => {
-        console.error('zip read error:', err);
-        return res.status(500).json({
-          error: 'Invalid or corrupted zip archive'
-        });
-      });
-    });
-
-  } catch (err) {
-    console.error('osz contents error:', err);
-    return res.status(500).json({
-      error: 'Internal server error'
-    });
-  }
+    } catch (err) {
+        console.error('osu file fetch error:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
 });
