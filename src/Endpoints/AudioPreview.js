@@ -132,6 +132,7 @@ async function getOszPath(beatmap) {
  * @api {get} /api/beatmap/:id/preview Get beatmap audio preview
  * @apiName beatmap-preview
  * @apiDescription Get beatmap audio preview
+ * @apiParam {Number} id Beatmap ID
  */
 app.get('/api/beatmap/:id/preview', async (req, res) => {
     try {

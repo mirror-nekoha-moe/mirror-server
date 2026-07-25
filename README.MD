@@ -1,10 +1,12 @@
 <a name="top"></a>
-# mirror.nekoha.moe v1.3.1
+# mirror.nekoha.moe v1.3.2
 
 REST API documentation for mirror.nekoha.moe
 
 # Table of contents
 
+- [/home/admin/git/mirror.nekoha.moe/mirror-server/Endpoints/AudioPreview.js](#/home/admin/git/mirror.nekoha.moe/mirror-server/Endpoints/AudioPreview.js)
+  - [Get beatmap audio preview](#Get-beatmap-audio-preview)
 - [Beatmap](#Beatmap)
   - [Get beatmap metadata](#Get-beatmap-metadata)
 - [Beatmapset](#Beatmapset)
@@ -27,6 +29,23 @@ REST API documentation for mirror.nekoha.moe
 
 ___
 
+
+# <a name='/home/admin/git/mirror.nekoha.moe/mirror-server/Endpoints/AudioPreview.js'></a> /home/admin/git/mirror.nekoha.moe/mirror-server/Endpoints/AudioPreview.js
+
+## <a name='Get-beatmap-audio-preview'></a> Get beatmap audio preview
+[Back to top](#top)
+
+<p>Get beatmap audio preview</p>
+
+```
+GET /api/beatmap/:id/preview
+```
+
+### Parameters - `Parameter`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| id | `Number` | <p>Beatmap ID</p> |
 
 # <a name='Beatmap'></a> Beatmap
 
