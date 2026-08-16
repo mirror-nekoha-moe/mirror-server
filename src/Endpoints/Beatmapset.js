@@ -1,6 +1,7 @@
 // Beatmapset.js
 import { app, pool, redis } from '../Constants.js';
 import { serializeBeatmapset } from '../Helper/serializers.js'
+import { trackCache } from '../Metrics.js';
 
 /**
  * @api {get} /api/beatmapset/:id Get beatmapset metadata
@@ -80,8 +81,10 @@ app.get('/api/beatmapset/:id', async (req, res) => {
         const cacheKey = `beatmapset:${id}`;
         const cached = await redis.get(cacheKey);
         if (cached) {
+            trackCache('beatmapset', true);
             return res.json(JSON.parse(cached));
         }
+        trackCache('beatmapset', false);
 
         const numericId = parseInt(id, 10);
         if (isNaN(numericId) || numericId < 0) {

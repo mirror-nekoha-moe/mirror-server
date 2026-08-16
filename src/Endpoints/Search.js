@@ -1,5 +1,6 @@
 import { app, pool, redis } from '../Constants.js';
 import { serializeBeatmapset } from '../Helper/serializers.js';
+import { trackCache } from '../Metrics.js';
 
 /**
  * @api {get} /api/search Search beatmapsets
@@ -45,8 +46,10 @@ app.get('/api/search', async (req, res) => {
 
         const cached = await redis.get(cacheKey);
         if (cached) {
+            trackCache('search', true);
             return res.json(JSON.parse(cached));
         }
+        trackCache('search', false);
 
         const {
             q, sort, order = 'desc', page = 1,

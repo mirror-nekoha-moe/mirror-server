@@ -3,6 +3,7 @@ import path from 'path';
 import { spawn } from 'child_process';
 import { app, pool, yauzl } from '../Constants.js';
 import crypto from 'crypto';
+import { trackDelivery, trackCache } from '../Metrics.js';
 
 const PREVIEW_CACHE_BEATMAP_DIR = process.env.PREVIEW_CACHE_BEATMAP_DIR;
 const PREVIEW_CACHE_BEATMAPSET_DIR = process.env.PREVIEW_CACHE_BEATMAPSET_DIR;
@@ -130,7 +131,8 @@ async function getOszPath(beatmap) {
 
 /**
  * @api {get} /api/beatmap/:id/preview Get beatmap audio preview
- * @apiName beatmap-preview
+ * @apiName AudioPreview
+ * @apiGroup Beatmap
  * @apiDescription Get beatmap audio preview
  * @apiParam {Number} id Beatmap ID
  */
@@ -171,6 +173,8 @@ app.get('/api/beatmap/:id/preview', async (req, res) => {
         // assume shared audio, check before touching the zip at all
         const setCachePath = path.join(PREVIEW_CACHE_BEATMAPSET_DIR, `${beatmap.beatmapset_id}.mp3`);
         if (fs.existsSync(setCachePath)) {
+            trackCache('audio_preview', true);
+            trackDelivery('audio_preview');
             res.setHeader('Content-Type', 'audio/mpeg');
             return fs.createReadStream(setCachePath).pipe(res);
         }
@@ -178,11 +182,14 @@ app.get('/api/beatmap/:id/preview', async (req, res) => {
         // also check per-beatmap cache in case this, beatmapset was already determined to be multi-audio
         const beatmapCachePath = path.join(PREVIEW_CACHE_BEATMAP_DIR, `${beatmap.id}.mp3`);
         if (fs.existsSync(beatmapCachePath)) {
+            trackCache('audio_preview', true);
+            trackDelivery('audio_preview');
             res.setHeader('Content-Type', 'audio/mpeg');
             return fs.createReadStream(beatmapCachePath).pipe(res);
         }
 
         // neither cache hit, inspect the archive
+        trackCache('audio_preview', false);
         const oszPath = await getOszPath(beatmap);
         if (!oszPath) {
             return res.status(404).json({ error: 'Beatmapset .osz not found' });
@@ -225,6 +232,7 @@ app.get('/api/beatmap/:id/preview', async (req, res) => {
                 return;
             }
             res.setHeader('Content-Type', 'audio/mpeg');
+            trackDelivery('audio_preview');
             fs.createReadStream(cachePath).pipe(res);
         });
 

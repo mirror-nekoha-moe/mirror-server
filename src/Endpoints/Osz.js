@@ -1,4 +1,5 @@
 import { app, pool, redis } from '../Constants.js';
+import { trackCache } from '../Metrics.js';
 /**
  * @api {get} /api/osz/:id Get .osz file size for a beatmapset
  * @apiName osz
@@ -19,8 +20,10 @@ app.get('/api/osz/:id', async (req, res) => {
     const cacheKey = `osz:${id}`;
     const cached = await redis.get(cacheKey);
     if (cached) {
+      trackCache('osz', true);
       return res.json(JSON.parse(cached));
     }
+    trackCache('osz', false);
     const numericId = parseInt(id, 10);
     if (isNaN(numericId) || numericId < 0) {
       res.setHeader('Content-Type', 'application/json');

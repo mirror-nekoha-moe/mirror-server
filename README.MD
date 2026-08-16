@@ -1,13 +1,12 @@
 <a name="top"></a>
-# mirror.nekoha.moe v1.3.2
+# mirror.nekoha.moe v1.4.0
 
 REST API documentation for mirror.nekoha.moe
 
 # Table of contents
 
-- [/home/admin/git/mirror.nekoha.moe/mirror-server/Endpoints/AudioPreview.js](#/home/admin/git/mirror.nekoha.moe/mirror-server/Endpoints/AudioPreview.js)
-  - [Get beatmap audio preview](#Get-beatmap-audio-preview)
 - [Beatmap](#Beatmap)
+  - [Get beatmap audio preview](#Get-beatmap-audio-preview)
   - [Get beatmap metadata](#Get-beatmap-metadata)
 - [Beatmapset](#Beatmapset)
   - [Get .osz file size for a beatmapset](#Get-.osz-file-size-for-a-beatmapset)
@@ -30,7 +29,7 @@ REST API documentation for mirror.nekoha.moe
 ___
 
 
-# <a name='/home/admin/git/mirror.nekoha.moe/mirror-server/Endpoints/AudioPreview.js'></a> /home/admin/git/mirror.nekoha.moe/mirror-server/Endpoints/AudioPreview.js
+# <a name='Beatmap'></a> Beatmap
 
 ## <a name='Get-beatmap-audio-preview'></a> Get beatmap audio preview
 [Back to top](#top)
@@ -46,8 +45,6 @@ GET /api/beatmap/:id/preview
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
 | id | `Number` | <p>Beatmap ID</p> |
-
-# <a name='Beatmap'></a> Beatmap
 
 ## <a name='Get-beatmap-metadata'></a> Get beatmap metadata
 [Back to top](#top)

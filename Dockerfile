@@ -18,6 +18,9 @@ COPY src ./src
 # Expose the API port
 EXPOSE 30727
 
+# Expose the aggregated cluster-wide metrics port
+EXPOSE 30728
+
 # Set environment
 ENV NODE_ENV=production
 

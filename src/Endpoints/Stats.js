@@ -1,4 +1,5 @@
 import { app, pool, redis } from '../Constants.js';
+import { trackCache, trackStats } from '../Metrics.js';
 /**
  * @api {get} /api/stats Get beatmap mirror statistics
  * @apiName stats
@@ -19,8 +20,12 @@ app.get('/api/stats', async (req, res) => {
         const cached = await redis.get(cacheKey);
 
         if (cached) {
-            return res.json(JSON.parse(cached));
+            trackCache('stats', true);
+            const parsed = JSON.parse(cached);
+            trackStats(Array.isArray(parsed) ? parsed[0] : parsed);
+            return res.json(parsed);
         }
+        trackCache('stats', false);
 
         // Not cached, query Postgres
         const result = await pool.query(`SELECT * FROM ${process.env.TABLE_STATS}`);
@@ -32,6 +37,7 @@ app.get('/api/stats', async (req, res) => {
         }
 
         const stats = result.rows[0];
+        trackStats(stats);
         await redis.set(cacheKey, JSON.stringify(stats), 'EX', process.env.REDIS_CACHE_TIME);
         res.json(stats);
     } catch (err) {

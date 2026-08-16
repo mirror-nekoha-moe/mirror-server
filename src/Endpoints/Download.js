@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { app, pool, yauzl, ZipArchive } from '../Constants.js';
+import { trackDelivery, downloadBytesTotal } from '../Metrics.js';
 
 /**
  * @api {get} /api/download/:id Download a beatmapset (.osz file)
@@ -129,6 +130,8 @@ app.get('/api/download/:id', async (req, res) => {
 
       // Track stats (use stored file_size as approximation since we strip video)
       res.on('finish', () => {
+        trackDelivery('download');
+        downloadBytesTotal.inc(Number(fileSize));
         pool.query(`
           INSERT INTO download_stats (day, downloads, bytes_sent)
           VALUES (CURRENT_DATE, 1, $1)
@@ -154,6 +157,8 @@ app.get('/api/download/:id', async (req, res) => {
       });
       // Track completed download stats
       res.on('finish', () => {
+        trackDelivery('download');
+        downloadBytesTotal.inc(Number(fileSize));
         pool.query(`
           INSERT INTO download_stats (day, downloads, bytes_sent)
           VALUES (CURRENT_DATE, 1, $1)

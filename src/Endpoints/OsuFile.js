@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { app, pool, yauzl } from '../Constants.js';
+import { trackDelivery } from '../Metrics.js';
 
 function extractBeatmapId(osuFileText) {
     const match = osuFileText.match(/^BeatmapID:\s*(\d+)/m);
@@ -116,6 +117,7 @@ app.get('/api/osu/:id', async (req, res) => {
 
                 if (match) {
                     responded = true;
+                    trackDelivery('osu_file');
                     res.setHeader('Content-Type', 'text/plain; charset=utf-8');
                     return res.send(match.buffer);
                 }
