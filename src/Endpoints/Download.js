@@ -87,7 +87,7 @@ app.get('/api/download/:id', async (req, res) => {
 
     // Set headers for download
     res.setHeader('Content-Type', 'application/x-osu-beatmap-archive');
-    res.setHeader('Content-Disposition', `attachment; filename="${oszFile}"`);
+    res.setHeader('Content-Disposition', `attachment; filename="${numericId}.osz"`);
 
     const fileSize = beatmapset.file_size ? BigInt(beatmapset.file_size) : 0n;
 
