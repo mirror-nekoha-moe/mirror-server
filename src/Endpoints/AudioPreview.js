@@ -131,7 +131,7 @@ async function getOszPath(beatmap) {
 
 /**
  * @api {get} /api/beatmap/:id/preview Get beatmap audio preview
- * @apiName AudioPreview
+ * @apiName Beatmap AudioPreview
  * @apiGroup Beatmap
  * @apiDescription Get beatmap audio preview
  * @apiParam {Number} id Beatmap ID
@@ -190,6 +190,117 @@ app.get('/api/beatmap/:id/preview', async (req, res) => {
 
         // neither cache hit, inspect the archive
         trackCache('audio_preview', false);
+        const oszPath = await getOszPath(beatmap);
+        if (!oszPath) {
+            return res.status(404).json({ error: 'Beatmapset .osz not found' });
+        } 
+
+        const audioInfo = await locateBeatmapAudio(oszPath, beatmap);
+        if (!audioInfo) {
+            return res.status(404).json({ error: '.osu file or AudioFilename not found' });
+        }
+
+        const cachePath = audioInfo.isSharedAudio ? setCachePath : beatmapCachePath;
+        const cacheDir = path.dirname(cachePath);
+        fs.mkdirSync(cacheDir, { recursive: true });
+
+        const startSeconds = audioInfo.previewTimeMs >= 0 ? audioInfo.previewTimeMs / 1000 : 0;
+
+        const ffmpeg = spawn('ffmpeg', [
+            '-y',
+            '-ss', String(startSeconds),
+            '-i', 'pipe:0',
+            '-t', String(AUDIO_PREVIEW_LENGTH),
+            '-acodec', 'libmp3lame',
+            '-b:a', String(AUDIO_PREVIEW_BITRATE),
+            cachePath
+        ]);
+
+        ffmpeg.on('error', err => {
+            console.error('ffmpeg spawn error:', err);
+            if (!res.headersSent) {
+                res.status(500).json({ error: 'Failed to generate preview' });
+            }
+        });
+
+        ffmpeg.on('close', code => {
+            if (code !== 0) {
+                console.error('ffmpeg exited with code', code);
+                if (!res.headersSent) {
+                    return res.status(500).json({ error: 'Failed to generate preview' });
+                }
+                return;
+            }
+            res.setHeader('Content-Type', 'audio/mpeg');
+            trackDelivery('audio_preview');
+            fs.createReadStream(cachePath).pipe(res);
+        });
+
+        const found = await getAudioStream(oszPath, audioInfo.audioFile, ffmpeg.stdin);
+        if (!found) {
+            ffmpeg.kill();
+            return res.status(404).json({ error: 'Audio file not found' });
+        }
+    } catch (err) {
+        console.error('preview generation error:', err);
+        if (!res.headersSent) {
+            res.status(500).json({ error: 'Failed to generate preview' });
+        }
+    }
+});
+
+/**
+ * @api {get} /api/beatmapset/:id/preview Get beatmapset audio preview
+ * @apiName Beatmapset AudioPreview
+ * @apiGroup Beatmapset
+ * @apiDescription Get beatmapset audio preview
+ * @apiParam {Number} id Beatmapset ID
+ */
+app.get('/api/beatmapset/:id/preview', async (req, res) => {
+    try {
+        const setId = parseInt(req.params.id, 10);
+        if (isNaN(setId) || setId < 0) {
+            return res.status(400).json({ error: 'Invalid beatmapset ID' });
+        }
+
+        const resultBeatmapset = await pool.query(
+            `SELECT * FROM ${process.env.TABLE_BEATMAPSET} WHERE id = $1`,
+            [setId]
+        );
+        if (resultBeatmapset.rows.length === 0 || resultBeatmapset.rows[0].downloaded === false) {
+            return res.status(404).json({ error: 'Beatmapset not found or not downloaded.' });
+        }
+
+        const setCachePath = path.join(PREVIEW_CACHE_BEATMAPSET_DIR, `${setId}.mp3`);
+        if (fs.existsSync(setCachePath)) {
+            trackCache('audio_preview', true);
+            trackDelivery('audio_preview');
+            res.setHeader('Content-Type', 'audio/mpeg');
+            return fs.createReadStream(setCachePath).pipe(res);
+        }
+
+        const resultBeatmap = await pool.query(
+            `SELECT * FROM ${process.env.TABLE_BEATMAP} WHERE beatmapset_id = $1 ORDER BY id ASC LIMIT 1`,
+            [setId]
+        );
+
+        if (resultBeatmap.rows.length === 0) {
+            return res.status(404).json({ error: 'No beatmaps found for this beatmapset' });
+        }
+        const beatmap = resultBeatmap.rows[0];
+
+        // per-beatmap cache path, in case this set turned out to be multi-audio
+        const beatmapCachePath = path.join(PREVIEW_CACHE_BEATMAP_DIR, `${beatmap.id}.mp3`);
+        if (fs.existsSync(beatmapCachePath)) {
+            trackCache('audio_preview', true);
+            trackDelivery('audio_preview');
+            res.setHeader('Content-Type', 'audio/mpeg');
+            return fs.createReadStream(beatmapCachePath).pipe(res);
+        }
+
+        // neither cache hit, inspect the archive
+        trackCache('audio_preview', false);
+
         const oszPath = await getOszPath(beatmap);
         if (!oszPath) {
             return res.status(404).json({ error: 'Beatmapset .osz not found' });
