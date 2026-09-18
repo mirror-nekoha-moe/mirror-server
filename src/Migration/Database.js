@@ -7,7 +7,6 @@ export async function runMigrations(pool) {
     await migrateDownloadStats(pool);
     await migrateRequestBatch(pool);
     await migrateRequestItem(pool);
-    await migrateAccessLog(pool);
     await migrateApiKeys(pool);
     console.log('Database tables are ready');
 }
