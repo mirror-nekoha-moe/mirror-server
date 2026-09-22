@@ -68,7 +68,7 @@ app.get('/api/beatmap/:id', async (req, res) => {
 
         if (result.rows.length > 0) {
             const beatmap = serializeBeatmap(result.rows[0]);
-            await redis.set(cacheKey, JSON.stringify(beatmap), 'EX', process.env.REDIS_CACHE_TIME);
+            await redis.set(cacheKey, JSON.stringify(beatmap), 'EX', process.env.REDIS_CACHE_TIME_LONG);
             res.json(beatmap);
         } else {
             res.setHeader('Content-Type', 'application/json');

@@ -34,7 +34,7 @@ app.get('/api/osz/:id', async (req, res) => {
       [numericId]
     );
     if (result.rows.length > 0) {
-      await redis.set(cacheKey, JSON.stringify(result.rows[0]), 'EX', process.env.REDIS_CACHE_TIME);
+      await redis.set(cacheKey, JSON.stringify(result.rows[0]), 'EX', process.env.REDIS_CACHE_TIME_LONG);
       res.json(result.rows[0]);
     } else {
       res.setHeader('Content-Type', 'application/json');

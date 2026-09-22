@@ -108,7 +108,7 @@ app.get('/api/beatmapset/:id', async (req, res) => {
         );
 
         const beatmapset = serializeBeatmapset(setResult.rows[0], beatmapResult.rows);
-        await redis.set(cacheKey, JSON.stringify(beatmapset), 'EX', process.env.REDIS_CACHE_TIME);
+        await redis.set(cacheKey, JSON.stringify(beatmapset), 'EX', process.env.REDIS_CACHE_TIME_LONG);
         res.json(beatmapset);
     } catch (err) {
         console.error('Error fetching beatmapset:', err);

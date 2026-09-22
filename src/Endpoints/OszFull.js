@@ -28,7 +28,7 @@ app.get('/api/oszFull', async (req, res) => {
 
     if (result.rows.length > 0) {
       const payload = JSON.stringify(result.rows);
-      await redis.set(cacheKey, payload, 'EX', process.env.REDIS_CACHE_TIME);
+      await redis.set(cacheKey, payload, 'EX', process.env.REDIS_CACHE_TIME_LONG);
       res.setHeader('Content-Type', 'application/json');
       return res.end(payload);
     } else {
