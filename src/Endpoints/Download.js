@@ -142,7 +142,11 @@ app.get('/api/download/:id', async (req, res) => {
       });
     } else {
       // Stream the file efficiently to the client
-      const fileStream = fs.createReadStream(filePath);
+      const fileStat = fs.statSync(filePath);
+      res.setHeader('Content-Length', fileStat.size);
+
+      // storage is cifs with cache=none, node default caps at around 10MB/s
+      const fileStream = fs.createReadStream(filePath, { highWaterMark: 4 * 1024 * 1024 });
       fileStream.on('open', () => {
         fileStream.pipe(res);
       });
