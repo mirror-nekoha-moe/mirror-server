@@ -1,12 +1,11 @@
 <a name="top"></a>
-# mirror.nekoha.moe v1.4.0
+# mirror.nekoha.moe v2.0.0
 
 REST API documentation for mirror.nekoha.moe
 
 # Table of contents
 
 - [Beatmap](#Beatmap)
-  - [Get beatmap audio preview](#Get-beatmap-audio-preview)
   - [Get beatmap metadata](#Get-beatmap-metadata)
 - [Beatmapset](#Beatmapset)
   - [Get .osz file size for a beatmapset](#Get-.osz-file-size-for-a-beatmapset)
@@ -30,21 +29,6 @@ ___
 
 
 # <a name='Beatmap'></a> Beatmap
-
-## <a name='Get-beatmap-audio-preview'></a> Get beatmap audio preview
-[Back to top](#top)
-
-<p>Get beatmap audio preview</p>
-
-```
-GET /api/beatmap/:id/preview
-```
-
-### Parameters - `Parameter`
-
-| Name     | Type       | Description                           |
-|----------|------------|---------------------------------------|
-| id | `Number` | <p>Beatmap ID</p> |
 
 ## <a name='Get-beatmap-metadata'></a> Get beatmap metadata
 [Back to top](#top)
@@ -534,7 +518,7 @@ curl -X GET https://mirror.nekoha.moe/api/osz/12345/content
 [Back to top](#top)
 
 ```
-POST /apirequest
+POST /api/request
 ```
 
 ## <a name='Get-full-request-details'></a> Get full request details

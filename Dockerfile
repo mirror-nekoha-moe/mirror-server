@@ -8,18 +8,25 @@ WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
+COPY tsconfig.json ./
 
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
+# Install ALL dependencies (including devDependencies for build)
+RUN npm ci && npm cache clean --force
 
 # Copy source code
 COPY src ./src
 
+# Build TypeScript
+RUN npm run build
+
+# Copy .env file to dist directory for runtime
+RUN cp /app/src/.env /app/dist/.env 2>/dev/null || echo ".env will be loaded from env_file"
+
+# Remove dev dependencies and TypeScript after build
+RUN npm prune --production
+
 # Expose the API port
 EXPOSE 30727
-
-# Expose the aggregated cluster-wide metrics port
-EXPOSE 30728
 
 # Set environment
 ENV NODE_ENV=production
