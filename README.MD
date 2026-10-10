@@ -1,5 +1,5 @@
 <a name="top"></a>
-# mirror.nekoha.moe v1.4.0
+# mirror.nekoha.moe v2.0.0
 
 REST API documentation for mirror.nekoha.moe
 
