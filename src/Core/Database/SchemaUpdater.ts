@@ -3,6 +3,7 @@ import { Database } from '@Core/Database/Connection';
 export class SchemaUpdater {
     static async initialize(): Promise<void> {
         await SchemaUpdater.createDownloadStats();
+        await SchemaUpdater.createApiRequestStats();
         await SchemaUpdater.createRequestBatch();
         await SchemaUpdater.createRequestItem();
         await SchemaUpdater.createApiKeys();
@@ -18,6 +19,22 @@ export class SchemaUpdater {
             );
         `);
         console.log('download_stats table is ready');
+    }
+
+    private static async createApiRequestStats(): Promise<void> {
+        await Database.query(`
+            CREATE TABLE IF NOT EXISTS api_request_stats (
+                day DATE PRIMARY KEY DEFAULT CURRENT_DATE,
+                requests BIGINT NOT NULL DEFAULT 0,
+                bytes_sent BIGINT NOT NULL DEFAULT 0
+            );
+        `);
+        // table existed before bytes_sent was added
+        await Database.query(`
+            ALTER TABLE api_request_stats
+            ADD COLUMN IF NOT EXISTS bytes_sent BIGINT NOT NULL DEFAULT 0;
+        `);
+        console.log('api_request_stats table is ready');
     }
 
     private static async createRequestBatch(): Promise<void> {

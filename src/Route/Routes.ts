@@ -22,6 +22,9 @@ export function registerRoutes(app: Express): void {
     // Stats
     app.get('/api/stats', handle(StatsController.getStats, 'Failed to fetch stats'));
     app.get('/api/download-stats', handle(StatsController.getDownloadStats, 'Failed to fetch download stats'));
+    app.get('/api/api-request-stats', handle(StatsController.getApiRequestStats, 'Failed to fetch API request stats'));
+    app.get('/api/api-requests-per-second', handle(StatsController.getRequestsPerSecond, 'Failed to fetch requests per second'));
+    app.get('/api/data-served', handle(StatsController.getDataServed, 'Failed to fetch data served'));
     app.get('/api/api-call-stats', handle(StatsController.getApiCallStats, 'Failed to fetch API call stats'));
 
     // Requests

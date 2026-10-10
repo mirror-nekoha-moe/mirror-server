@@ -1,6 +1,6 @@
 import { Database } from '@Core/Database/Connection';
 import { Environment } from '@Bootstrap/Environment';
-import { StatsRow, DownloadStatsRow, ApiCallRow } from '@Model/StatsModel';
+import { StatsRow, DownloadStatsRow, ApiRequestStatsRow, DataServedRow, ApiCallRow } from '@Model/StatsModel';
 
 export class StatsRepository {
     static async getStats(): Promise<StatsRow | null> {
@@ -26,6 +26,35 @@ export class StatsRepository {
                 SET downloads  = download_stats.downloads  + 1,
                     bytes_sent = download_stats.bytes_sent + $1
         `, [bytes]);
+    }
+
+    static async getDailyApiRequests(days: number): Promise<ApiRequestStatsRow[]> {
+        const res = await Database.query<ApiRequestStatsRow>(`
+            SELECT to_char(day, 'YYYY-MM-DD') AS day, requests
+            FROM api_request_stats
+            WHERE day >= CURRENT_DATE - ($1 || ' days')::interval
+            ORDER BY day ASC
+        `, [days]);
+        return res.rows;
+    }
+
+    static async addApiRequests(count: number, bytes: number): Promise<void> {
+        await Database.query(`
+            INSERT INTO api_request_stats (day, requests, bytes_sent)
+            VALUES (CURRENT_DATE, $1, $2)
+            ON CONFLICT (day) DO UPDATE
+                SET requests   = api_request_stats.requests   + $1,
+                    bytes_sent = api_request_stats.bytes_sent + $2
+        `, [count, bytes]);
+    }
+
+    static async getTotalDataServed(): Promise<DataServedRow> {
+        const res = await Database.query<DataServedRow>(`
+            SELECT
+                (SELECT COALESCE(SUM(bytes_sent), 0) FROM download_stats) AS download_bytes,
+                (SELECT COALESCE(SUM(bytes_sent), 0) FROM api_request_stats) AS api_bytes
+        `);
+        return res.rows[0];
     }
 
     // beatmap-fetcher writes and prunes these

@@ -26,4 +26,20 @@ export class Cache {
     static async setRaw(key: string, value: string, ttlSeconds: number): Promise<void> {
         await redis.set(key, value, 'EX', ttlSeconds);
     }
+
+    static async incrementBy(key: string, amount: number, ttlSeconds: number): Promise<void> {
+        await redis.multi()
+            .incrby(key, amount)
+            .expire(key, ttlSeconds)
+            .exec();
+    }
+
+    static async getNumbers(keys: string[]): Promise<number[]> {
+        const values = await redis.mget(keys);
+        const numbers = [];
+        for (const value of values) {
+            numbers.push(Number(value ?? 0));
+        }
+        return numbers;
+    }
 }

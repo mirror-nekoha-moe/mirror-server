@@ -21,8 +21,11 @@ REST API documentation for mirror.nekoha.moe
   - [Get full request details](#Get-full-request-details)
   - [List all beatmap requests](#List-all-beatmap-requests)
 - [Stats](#Stats)
+  - [Get all time data served](#Get-all-time-data-served)
   - [Get beatmap mirror statistics](#Get-beatmap-mirror-statistics)
+  - [Get daily API request statistics](#Get-daily-API-request-statistics)
   - [Get daily download statistics](#Get-daily-download-statistics)
+  - [Get live API requests per second](#Get-live-API-requests-per-second)
   - [Get osu! API call statistics (last 6 hours, per minute)](#Get-osu!-API-call-statistics-(last-6-hours,-per-minute))
 
 ___
@@ -543,6 +546,24 @@ GET /api/request
 
 # <a name='Stats'></a> Stats
 
+## <a name='Get-all-time-data-served'></a> Get all time data served
+[Back to top](#top)
+
+<p>Total bytes sent to clients since tracking started, downloads and API responses.</p>
+
+```
+GET /api/data-served
+```
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| download_bytes | `Number` | <p>Bytes sent by beatmapset downloads</p> |
+| api_bytes | `Number` | <p>Bytes sent by all other API responses</p> |
+| total_bytes | `Number` | <p>download_bytes + api_bytes</p> |
+
 ## <a name='Get-beatmap-mirror-statistics'></a> Get beatmap mirror statistics
 [Back to top](#top)
 
@@ -579,6 +600,28 @@ curl https://mirror.nekoha.moe/api/stats
 | 404 |  | <p>No stats found</p> |
 | 500 |  | <p>Internal server error</p> |
 
+## <a name='Get-daily-API-request-statistics'></a> Get daily API request statistics
+[Back to top](#top)
+
+<p>Requests served by this API per day, downloads not included (see /api/download-stats).</p>
+
+```
+GET /api/api-request-stats
+```
+
+### Query Parameters
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| days | `Number` | **optional** <p>Number of past days to return</p>_Default value: 30_<br> |
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| rows | `Array` | <p>Array of { day, requests }</p> |
+
 ## <a name='Get-daily-download-statistics'></a> Get daily download statistics
 [Back to top](#top)
 
@@ -598,6 +641,22 @@ GET /api/download-stats
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
 | rows | `Array` | <p>Array of { day, downloads, bytes_sent }</p> |
+
+## <a name='Get-live-API-requests-per-second'></a> Get live API requests per second
+[Back to top](#top)
+
+<p>Average API requests per second over the last 10 minutes, downloads not included.</p>
+
+```
+GET /api/api-requests-per-second
+```
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| requests_per_second | `Number` | <p>Average requests per second</p> |
 
 ## <a name='Get-osu!-API-call-statistics-(last-6-hours,-per-minute)'></a> Get osu! API call statistics (last 6 hours, per minute)
 [Back to top](#top)
