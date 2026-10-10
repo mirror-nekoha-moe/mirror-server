@@ -183,6 +183,7 @@ export class BeatmapsetController {
         }
 
         res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Length', Buffer.byteLength(payload));
         res.end(payload);
     }
 }

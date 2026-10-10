@@ -1,8 +1,8 @@
 import fs from 'fs';
 import { Request, Response } from 'express';
+import { ZipArchive } from 'archiver';
 import { Environment } from '@Bootstrap/Environment';
 import { parseId, sendError } from '@Core/Http/Http';
-import { toNum } from '@View/Format';
 import { BeatmapsetRepository } from '@Repository/BeatmapsetRepository';
 import { BeatmapRepository } from '@Repository/BeatmapRepository';
 import { StorageService } from '@Service/StorageService';
@@ -73,14 +73,11 @@ export class FileController {
         res.setHeader('Content-Type', 'application/x-osu-beatmap-archive');
         res.setHeader('Content-Disposition', `attachment; filename="${id}.osz"`);
 
-        // noVideo still counts the full stored size
-        const storedSize = toNum(beatmapset.file_size) ?? 0;
-
         // Only attempt video stripping if the map actually has a video
         const stripVideo = req.query.noVideo === '1' && beatmapset.video === true;
         if (stripVideo) {
-            res.on('finish', () => DownloadService.recordDownload(storedSize));
-            FileController.sendWithoutVideo(osz.filePath, res);
+            const archive = FileController.sendWithoutVideo(osz.filePath, res);
+            res.on('finish', () => DownloadService.recordDownload(archive.pointer()));
             return;
         }
 
@@ -100,7 +97,7 @@ export class FileController {
         res.on('close', () => {
             // clients hang up at Content-Length before 'finish' fires
             if (fileStream.bytesRead >= osz.size) {
-                DownloadService.recordDownload(storedSize);
+                DownloadService.recordDownload(osz.size);
             }
             fileStream.destroy();
         });
@@ -244,7 +241,7 @@ export class FileController {
         res.send(match.buffer);
     }
 
-    private static sendWithoutVideo(filePath: string, res: Response): void {
+    private static sendWithoutVideo(filePath: string, res: Response): ZipArchive {
         const archive = OszService.createArchiveWithoutVideo(filePath);
         archive.on('error', (err) => {
             console.error('Archiver error:', err);
@@ -255,5 +252,6 @@ export class FileController {
             sendError(res, 500, 'Failed to repack beatmapset');
         });
         archive.pipe(res);
+        return archive;
     }
 }
