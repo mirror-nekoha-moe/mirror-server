@@ -12,15 +12,18 @@ const REQUIRED_VARS = [
     'TABLE_BEATMAPSET',
     'TABLE_BEATMAP',
     'TABLE_STATS',
+    'TABLE_ARCHIVE',
 
     // Redis
     'REDIS_HOST',
     'REDIS_PORT',
     'REDIS_CACHE_TIME',
     'REDIS_CACHE_TIME_LONG',
+    'REDIS_CACHE_TIME_SHORT',
 
     // Settings
     'STORAGE_DIR',
+    'ARCHIVE_DIR',
     'PORT',
 ];
 
@@ -37,13 +40,16 @@ export interface EnvType {
     TABLE_BEATMAPSET: string;
     TABLE_BEATMAP: string;
     TABLE_STATS: string;
+    TABLE_ARCHIVE: string;
 
     REDIS_HOST: string;
     REDIS_PORT: number;
     REDIS_CACHE_TIME: number;
     REDIS_CACHE_TIME_LONG: number;
+    REDIS_CACHE_TIME_SHORT: number;
 
     STORAGE_DIR: string;
+    ARCHIVE_DIR: string;
     STREAM_CHUNK_SIZE_KB: number;
     PORT: number;
     DOMAIN: string;
@@ -96,13 +102,16 @@ export class Environment {
             TABLE_BEATMAPSET: readString('TABLE_BEATMAPSET'),
             TABLE_BEATMAP: readString('TABLE_BEATMAP'),
             TABLE_STATS: readString('TABLE_STATS'),
+            TABLE_ARCHIVE: readString('TABLE_ARCHIVE'),
 
             REDIS_HOST: readString('REDIS_HOST'),
             REDIS_PORT: readNumber('REDIS_PORT', 6379),
             REDIS_CACHE_TIME: readNumber('REDIS_CACHE_TIME', 10800),
             REDIS_CACHE_TIME_LONG: readNumber('REDIS_CACHE_TIME_LONG', 172800),
+            REDIS_CACHE_TIME_SHORT: readNumber('REDIS_CACHE_TIME_SHORT', 300),
 
             STORAGE_DIR: readString('STORAGE_DIR'),
+            ARCHIVE_DIR: readString('ARCHIVE_DIR'),
             STREAM_CHUNK_SIZE_KB: readNumber('STREAM_CHUNK_SIZE_KB', 4096),
             PORT: readNumber('PORT', 30727),
             DOMAIN: readString('DOMAIN'),

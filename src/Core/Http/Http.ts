@@ -36,3 +36,29 @@ export function readQueryString(value: unknown): string | undefined {
     }
     return String(value);
 }
+
+export interface ByteRange {
+    start: number;
+    end: number;
+}
+
+// no suffix or multipart ranges
+export function parseRange(header: string | undefined, size: number): ByteRange | null {
+    if (!header) {
+        return null;
+    }
+    const match = header.match(/^bytes=(\d+)-(\d*)$/);
+    if (!match) {
+        return null;
+    }
+
+    const start = parseInt(match[1], 10);
+    let end = size - 1;
+    if (match[2] !== '') {
+        end = parseInt(match[2], 10);
+    }
+    if (end > size - 1) {
+        end = size - 1;
+    }
+    return { start, end };
+}

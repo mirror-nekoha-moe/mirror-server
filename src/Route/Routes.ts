@@ -3,6 +3,7 @@ import { handle } from '@Core/Http/Http';
 import { BeatmapController } from '@Controller/BeatmapController';
 import { BeatmapsetController } from '@Controller/BeatmapsetController';
 import { FileController } from '@Controller/FileController';
+import { ArchiveController } from '@Controller/ArchiveController';
 import { StatsController } from '@Controller/StatsController';
 import { RequestController } from '@Controller/RequestController';
 
@@ -18,6 +19,10 @@ export function registerRoutes(app: Express): void {
     app.get('/api/download/:id', handle(FileController.download, 'Failed to download beatmapset'));
     app.get('/api/osz/:id/content', handle(FileController.getOszContent, 'Internal server error'));
     app.get('/api/osu/:id', handle(FileController.getOsuFile, 'Internal server error'));
+
+    // Archives
+    app.get('/api/archive', handle(ArchiveController.listArchives, 'Failed to fetch archives'));
+    app.get('/api/archive/:year/:month/:mode', handle(ArchiveController.downloadArchive, 'Failed to download archive'));
 
     // Stats
     app.get('/api/stats', handle(StatsController.getStats, 'Failed to fetch stats'));

@@ -1,10 +1,13 @@
 <a name="top"></a>
-# mirror.nekoha.moe v2.1.0
+# mirror.nekoha.moe v2.2.0
 
 REST API documentation for mirror.nekoha.moe
 
 # Table of contents
 
+- [Archive](#Archive)
+  - [Download a monthly archive](#Download-a-monthly-archive)
+  - [Get monthly archives](#Get-monthly-archives)
 - [Beatmap](#Beatmap)
   - [Get beatmap metadata](#Get-beatmap-metadata)
 - [Beatmapset](#Beatmapset)
@@ -30,6 +33,91 @@ REST API documentation for mirror.nekoha.moe
 
 ___
 
+
+# <a name='Archive'></a> Archive
+
+## <a name='Download-a-monthly-archive'></a> Download a monthly archive
+[Back to top](#top)
+
+<p>Streams the zip. Downloads can be paused and resumed.</p>
+
+```
+GET /api/archive/:year/:month/:mode
+```
+
+### Parameters - `Parameter`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| year | `String` | <p>Year (YYYY)</p> |
+| month | `String` | <p>Month (MM)</p> |
+| mode | `String` | <p>std, taiko, catch or mania</p> |
+
+### Examples
+
+Example usage:
+
+```curl
+curl -OJ https://mirror.nekoha.moe/api/archive/2015/05/std
+```
+
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| .zip | `File` | <p>The archive (application/zip)</p> |
+
+### Error response
+
+#### Error response - `Error 4xx`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| 400 |  | <p>Invalid year, month or mode</p> |
+| 404 |  | <p>Archive not found</p> |
+| 500 |  | <p>Internal server error</p> |
+
+## <a name='Get-monthly-archives'></a> Get monthly archives
+[Back to top](#top)
+
+<p>Returns all monthly archives. One zip per month and mode with every ranked, approved and loved beatmapset ranked in that month (UTC). Cached in Redis.</p>
+
+```
+GET /api/archive
+```
+
+### Examples
+
+Example usage:
+
+```curl
+curl https://mirror.nekoha.moe/api/archive
+```
+
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| archives | `Object[]` |  |
+| archives.month | `String` | <p>Month (YYYY-MM)</p> |
+| archives.mode | `String` | <p>std, taiko, catch or mania</p> |
+| archives.file_name | `String` | <p>Zip file name</p> |
+| archives.size_gb | `Number` | <p>Size in GB</p> |
+| archives.beatmapset_count | `Number` | <p>Beatmapsets in the zip</p> |
+| archives.created_at | `String` | <p>ISO date when the zip was built</p> |
+| archives.url | `String` | <p>Download URL</p> |
+
+### Error response
+
+#### Error response - `Error 4xx`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| 500 |  | <p>Internal server error</p> |
 
 # <a name='Beatmap'></a> Beatmap
 

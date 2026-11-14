@@ -16,7 +16,8 @@ function responseSize(res: Response): number {
 function countApiRequest(req: Request, res: Response, next: NextFunction): void {
     const isApi = req.path.startsWith('/api/');
     const isDownload = req.path.startsWith('/api/download/');
-    if (isApi && !isDownload) {
+    const isArchiveDownload = req.path.startsWith('/api/archive/');
+    if (isApi && !isDownload && !isArchiveDownload) {
         res.on('close', () => RequestStatsService.count(responseSize(res)));
     }
     next();
