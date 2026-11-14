@@ -73,10 +73,14 @@ export function toIso(value: Date | string | null): string | null {
     if (!value) {
         return null;
     }
+    let date: Date;
     if (value instanceof Date) {
-        return value.toISOString();
+        date = value;
+    } else {
+        date = new Date(value);
     }
-    return new Date(value).toISOString();
+    // osu! sends dates without milliseconds
+    return date.toISOString().replace('.000Z', 'Z');
 }
 
 function toNamedId(value: unknown, names: Record<number, string>): NamedId | null {

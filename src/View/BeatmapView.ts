@@ -1,8 +1,36 @@
 import { BeatmapRow } from '@Model/BeatmapModel';
+import { BeatmapsetRow } from '@Model/BeatmapsetModel';
+import { BeatmapsetView } from '@View/BeatmapsetView';
 import { toRanked, toNum, toIso } from '@View/Format';
 
 export class BeatmapView {
+    // beatmap inside GET /beatmapsets/{id}
     static render(row: BeatmapRow) {
+        const beatmap = BeatmapView.renderExtended(row);
+
+        return {
+            ...beatmap,
+            top_tag_ids: row.top_tag_ids,
+            current_user_tag_ids: [],
+        };
+    }
+
+    // GET /beatmaps/{id} has the set but no tag ids
+    static renderWithBeatmapset(row: BeatmapRow, beatmapsetRow: BeatmapsetRow | null) {
+        const beatmap = BeatmapView.renderExtended(row);
+
+        let beatmapset = null;
+        if (beatmapsetRow) {
+            beatmapset = BeatmapsetView.renderExtended(beatmapsetRow);
+        }
+
+        return {
+            ...beatmap,
+            beatmapset,
+        };
+    }
+
+    static renderExtended(row: BeatmapRow) {
         return {
             beatmapset_id: toNum(row.beatmapset_id),
             difficulty_rating: toNum(row.difficulty_rating),
@@ -33,13 +61,12 @@ export class BeatmapView {
             url: row.url,
             checksum: row.checksum,
             max_combo: toNum(row.max_combo),
-            // TODO?
-            // current_user_playcount
-            // current_user_tag_ids
-            // owners
-            // top_tag_ids
+            failtimes: row.failtimes,
+            owners: row.owners,
+            // osu! sends this for guest tokens too
+            current_user_playcount: 0,
         };
     }
 }
 
-export type BeatmapJson = ReturnType<typeof BeatmapView.render>;
+export type BeatmapJson = ReturnType<typeof BeatmapView.renderWithBeatmapset>;

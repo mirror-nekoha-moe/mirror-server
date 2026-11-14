@@ -1,6 +1,7 @@
 import { Cache } from '@Core/Cache/Cache';
 import { Environment } from '@Bootstrap/Environment';
 import { BeatmapRepository } from '@Repository/BeatmapRepository';
+import { BeatmapsetRepository } from '@Repository/BeatmapsetRepository';
 import { BeatmapView, BeatmapJson } from '@View/BeatmapView';
 
 export class BeatmapService {
@@ -16,7 +17,10 @@ export class BeatmapService {
             return null;
         }
 
-        const beatmap = BeatmapView.render(row);
+        const beatmapsetId = Number(row.beatmapset_id);
+        const beatmapsetRow = await BeatmapsetRepository.getById(beatmapsetId);
+
+        const beatmap = BeatmapView.renderWithBeatmapset(row, beatmapsetRow);
         await Cache.setJson(cacheKey, beatmap, Environment.env.REDIS_CACHE_TIME_LONG);
         return beatmap;
     }

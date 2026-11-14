@@ -14,15 +14,19 @@ export class BeatmapsetController {
      * @apiSuccess {String}   artist                  Song artist
      * @apiSuccess {String}   artist_unicode          Song artist (unicode)
      * @apiSuccess {Number}   bpm                     BPM
+     * @apiSuccess {Boolean}  can_be_hyped            Whether the beatmapset can be hyped
      * @apiSuccess {String}   creator                 Mapper username
      * @apiSuccess {String}   deleted_at              ISO date when deleted
      * @apiSuccess {Object}   description             Description object
      * @apiSuccess {String}   description.description Beatmapset description
+     * @apiSuccess {Boolean}  discussion_enabled      Whether the discussion page is enabled
+     * @apiSuccess {Boolean}  discussion_locked       Whether the discussion page is locked
      * @apiSuccess {Number}   favourite_count         Number of favourites
      * @apiSuccess {Number}   genre_id                Genre ID
      * @apiSuccess {Object}   genre                   Genre object
      * @apiSuccess {Number}   genre.id                Genre ID
      * @apiSuccess {String}   genre.name              Genre name
+     * @apiSuccess {Object}   hype                    Hype progress (current, required), null when not hypeable
      * @apiSuccess {Number}   id                      Beatmapset ID
      * @apiSuccess {Boolean}  is_scoreable            Whether scores can be submitted
      * @apiSuccess {Number}   language_id             Language ID
@@ -30,6 +34,7 @@ export class BeatmapsetController {
      * @apiSuccess {Number}   language.id             Language ID
      * @apiSuccess {String}   language.name           Language name
      * @apiSuccess {String}   last_updated            ISO date of last update
+     * @apiSuccess {String}   legacy_thread_url       Forum thread URL
      * @apiSuccess {String}   more_information        Additional information
      * @apiSuccess {Boolean}  nsfw                    Whether the beatmapset is marked NSFW
      * @apiSuccess {Number}   offset                  Audio offset
@@ -46,7 +51,9 @@ export class BeatmapsetController {
      * @apiSuccess {String}   tags                    Space-separated tags
      * @apiSuccess {String}   title                   Song title
      * @apiSuccess {String}   title_unicode           Song title (unicode)
+     * @apiSuccess {Number}   track_id                Featured artist track ID
      * @apiSuccess {Number}   user_id                 Mapper user ID
+     * @apiSuccess {Number}   version_count           Number of uploaded versions
      * @apiSuccess {Boolean}  video                   Whether the beatmapset includes a video
      * @apiSuccess {Object}   covers                  Cover image URLs
      * @apiSuccess {String}   covers.cover
@@ -59,8 +66,18 @@ export class BeatmapsetController {
      * @apiSuccess {String}   covers.slimcover@2x
      * @apiSuccess {Object}   availability
      * // download_disabled is not reliable, mirror stores its own state
+     * @apiSuccess {Boolean}  availability.download_disabled
      * @apiSuccess {String}   availability.more_information
-     * @apiSuccess {Object[]} beatmaps                Array of beatmaps in this set (see /api/beatmap/:id for structure)
+     * @apiSuccess {Object[]} beatmaps                Array of beatmaps in this set (see /api/beatmap/:id for structure, plus top_tag_ids and current_user_tag_ids)
+     * @apiSuccess {Object[]} converts                Converted difficulties for the other modes, same structure as beatmaps
+     * @apiSuccess {Object[]} current_nominations     Current nominations
+     * @apiSuccess {Object}   nominations_summary     Nomination progress
+     * @apiSuccess {String[]} pack_tags               Beatmap pack tags
+     * @apiSuccess {Number[]} ratings                 Rating counts from 0 to 10
+     * @apiSuccess {Object[]} recent_favourites       Users who recently favourited
+     * @apiSuccess {Object[]} related_tags            User tags used on the difficulties
+     * @apiSuccess {Object[]} related_users           Users related to the beatmapset
+     * @apiSuccess {Object}   user                    Mapper user object
      * @apiSuccess {Object}   mirror                  Mirror-only data
      * @apiSuccess {Number}   mirror.beatmap_count
      * @apiSuccess {Boolean}  mirror.downloaded

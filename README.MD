@@ -1,5 +1,5 @@
 <a name="top"></a>
-# mirror.nekoha.moe v2.0.0
+# mirror.nekoha.moe v2.1.0
 
 REST API documentation for mirror.nekoha.moe
 
@@ -91,6 +91,12 @@ curl https://mirror.nekoha.moe/api/beatmap/123456
 | url | `String` | <p>URL to beatmap</p> |
 | checksum | `String` | <p>MD5 checksum of the .osu file</p> |
 | max_combo | `Number` | <p>Max Combo</p> |
+| failtimes | `Object` | <p>Fail and exit points</p> |
+| failtimes.exit | `Number[]` |  |
+| failtimes.fail | `Number[]` |  |
+| owners | `Object[]` | <p>Difficulty owners (id, username)</p> |
+| current_user_playcount | `Number` | <p>Always 0</p> |
+| beatmapset | `Object` | <p>Parent beatmapset without beatmaps (see /api/beatmapset/:id for structure)</p> |
 
 ### Error response
 
@@ -215,15 +221,19 @@ curl https://mirror.nekoha.moe/api/beatmapset/12345
 | artist | `String` | <p>Song artist</p> |
 | artist_unicode | `String` | <p>Song artist (unicode)</p> |
 | bpm | `Number` | <p>BPM</p> |
+| can_be_hyped | `Boolean` | <p>Whether the beatmapset can be hyped</p> |
 | creator | `String` | <p>Mapper username</p> |
 | deleted_at | `String` | <p>ISO date when deleted</p> |
 | description | `Object` | <p>Description object</p> |
 | description.description | `String` | <p>Beatmapset description</p> |
+| discussion_enabled | `Boolean` | <p>Whether the discussion page is enabled</p> |
+| discussion_locked | `Boolean` | <p>Whether the discussion page is locked</p> |
 | favourite_count | `Number` | <p>Number of favourites</p> |
 | genre_id | `Number` | <p>Genre ID</p> |
 | genre | `Object` | <p>Genre object</p> |
 | genre.id | `Number` | <p>Genre ID</p> |
 | genre.name | `String` | <p>Genre name</p> |
+| hype | `Object` | <p>Hype progress (current, required), null when not hypeable</p> |
 | id | `Number` | <p>Beatmapset ID</p> |
 | is_scoreable | `Boolean` | <p>Whether scores can be submitted</p> |
 | language_id | `Number` | <p>Language ID</p> |
@@ -231,6 +241,7 @@ curl https://mirror.nekoha.moe/api/beatmapset/12345
 | language.id | `Number` | <p>Language ID</p> |
 | language.name | `String` | <p>Language name</p> |
 | last_updated | `String` | <p>ISO date of last update</p> |
+| legacy_thread_url | `String` | <p>Forum thread URL</p> |
 | more_information | `String` | <p>Additional information</p> |
 | nsfw | `Boolean` | <p>Whether the beatmapset is marked NSFW</p> |
 | offset | `Number` | <p>Audio offset</p> |
@@ -247,7 +258,9 @@ curl https://mirror.nekoha.moe/api/beatmapset/12345
 | tags | `String` | <p>Space-separated tags</p> |
 | title | `String` | <p>Song title</p> |
 | title_unicode | `String` | <p>Song title (unicode)</p> |
+| track_id | `Number` | <p>Featured artist track ID</p> |
 | user_id | `Number` | <p>Mapper user ID</p> |
+| version_count | `Number` | <p>Number of uploaded versions</p> |
 | video | `Boolean` | <p>Whether the beatmapset includes a video</p> |
 | covers | `Object` | <p>Cover image URLs</p> |
 | covers.cover | `String` |  |
@@ -259,8 +272,18 @@ curl https://mirror.nekoha.moe/api/beatmapset/12345
 | covers.slimcover | `String` |  |
 | covers.slimcover@2x | `String` |  |
 | availability | `Object` | <p>// download_disabled is not reliable, mirror stores its own state</p> |
+| availability.download_disabled | `Boolean` |  |
 | availability.more_information | `String` |  |
-| beatmaps | `Object[]` | <p>Array of beatmaps in this set (see /api/beatmap/:id for structure)</p> |
+| beatmaps | `Object[]` | <p>Array of beatmaps in this set (see /api/beatmap/:id for structure, plus top_tag_ids and current_user_tag_ids)</p> |
+| converts | `Object[]` | <p>Converted difficulties for the other modes, same structure as beatmaps</p> |
+| current_nominations | `Object[]` | <p>Current nominations</p> |
+| nominations_summary | `Object` | <p>Nomination progress</p> |
+| pack_tags | `String[]` | <p>Beatmap pack tags</p> |
+| ratings | `Number[]` | <p>Rating counts from 0 to 10</p> |
+| recent_favourites | `Object[]` | <p>Users who recently favourited</p> |
+| related_tags | `Object[]` | <p>User tags used on the difficulties</p> |
+| related_users | `Object[]` | <p>Users related to the beatmapset</p> |
+| user | `Object` | <p>Mapper user object</p> |
 | mirror | `Object` | <p>Mirror-only data</p> |
 | mirror.beatmap_count | `Number` |  |
 | mirror.downloaded | `Boolean` |  |

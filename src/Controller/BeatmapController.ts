@@ -38,6 +38,12 @@ export class BeatmapController {
      * @apiSuccess {String}  url                URL to beatmap
      * @apiSuccess {String}  checksum           MD5 checksum of the .osu file
      * @apiSuccess {Number}  max_combo          Max Combo
+     * @apiSuccess {Object}  failtimes          Fail and exit points
+     * @apiSuccess {Number[]} failtimes.exit
+     * @apiSuccess {Number[]} failtimes.fail
+     * @apiSuccess {Object[]} owners            Difficulty owners (id, username)
+     * @apiSuccess {Number}  current_user_playcount Always 0
+     * @apiSuccess {Object}  beatmapset         Parent beatmapset without beatmaps (see /api/beatmapset/:id for structure)
      * @apiError 400 Invalid beatmap ID (must be a positive number)
      * @apiError 404 Beatmap not found
      * @apiError 500 Internal server error
