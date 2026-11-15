@@ -35,6 +35,7 @@ export class BeatmapsetView {
             mirror: {
                 beatmap_count: toNum(row.beatmap_count),
                 downloaded: row.downloaded,
+                downloaded_last_updated: toIso(row.downloaded_last_updated),
                 download_disabled: row.download_disabled,
                 file_size: toNum(row.file_size),
                 mode_osu_count: toNum(row.mode_osu_count),

@@ -81,6 +81,7 @@ export class BeatmapsetController {
      * @apiSuccess {Object}   mirror                  Mirror-only data
      * @apiSuccess {Number}   mirror.beatmap_count
      * @apiSuccess {Boolean}  mirror.downloaded
+     * @apiSuccess {String}   mirror.downloaded_last_updated last_updated of the stored .osz
      * @apiSuccess {Boolean}  mirror.download_disabled
      * @apiSuccess {Number}   mirror.file_size
      * @apiSuccess {Number}   mirror.mode_osu_count
