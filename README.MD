@@ -1,5 +1,5 @@
 <a name="top"></a>
-# mirror.nekoha.moe v2.2.0
+# mirror.nekoha.moe v2.3.0
 
 REST API documentation for mirror.nekoha.moe
 
@@ -15,6 +15,8 @@ REST API documentation for mirror.nekoha.moe
   - [Get all beatmapset .osz file sizes](#Get-all-beatmapset-.osz-file-sizes)
   - [Get beatmapset metadata](#Get-beatmapset-metadata)
   - [Search beatmapsets](#Search-beatmapsets)
+- [Events](#Events)
+  - [Beatmapset events (WebSocket)](#Beatmapset-events-(WebSocket))
 - [File](#File)
   - [Download a beatmapset (.osz file)](#Download-a-beatmapset-(.osz-file))
   - [Get .osu file for a beatmap](#Get-.osu-file-for-a-beatmap)
@@ -375,6 +377,7 @@ curl https://mirror.nekoha.moe/api/beatmapset/12345
 | mirror | `Object` | <p>Mirror-only data</p> |
 | mirror.beatmap_count | `Number` |  |
 | mirror.downloaded | `Boolean` |  |
+| mirror.downloaded_last_updated | `String` | <p>last_updated of the stored .osz</p> |
 | mirror.download_disabled | `Boolean` |  |
 | mirror.file_size | `Number` |  |
 | mirror.mode_osu_count | `Number` |  |
@@ -458,6 +461,36 @@ curl "https://mirror.nekoha.moe/api/search?video=true&status=ranked"
 | Name     | Type       | Description                           |
 |----------|------------|---------------------------------------|
 | 500 |  | <p>Internal server error</p> |
+
+# <a name='Events'></a> Events
+
+## <a name='Beatmapset-events-(WebSocket)'></a> Beatmapset events (WebSocket)
+[Back to top](#top)
+
+<p>Sends every beatmapset event from osu! as JSON.</p>
+
+```
+GET /api/ws
+```
+
+### Examples
+
+Example usage:
+
+```js
+const ws = new WebSocket('wss://mirror.nekoha.moe/api/ws');
+```
+
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| source | `String` | <p>events or beatmapset_events</p> |
+| type | `String` | <p>osu! event type</p> |
+| event | `Object` | <p>osu! event</p> |
+| beatmapset | `Object` | <p>Beatmapset with beatmaps (see /api/beatmapset/:id for structure)</p> |
 
 # <a name='File'></a> File
 
