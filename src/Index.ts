@@ -4,6 +4,7 @@ import { Environment } from '@Bootstrap/Environment';
 
 async function startPrimary(): Promise<void> {
     const { SchemaUpdater } = await import('@Core/Database/SchemaUpdater');
+    const { BeatmapsetEventService } = await import('@Service/BeatmapsetEventService');
 
     console.log(`[ mirror-server - v${process.env.npm_package_version} ]`);
     console.log(`Primary process ${process.pid}`);
@@ -19,6 +20,8 @@ async function startPrimary(): Promise<void> {
         console.log(`Worker ${worker.process.pid} died, restarting...`);
         cluster.fork();
     });
+
+    BeatmapsetEventService.start();
 
 }
 

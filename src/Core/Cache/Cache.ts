@@ -7,6 +7,16 @@ const redis = new Redis({
 });
 
 export class Cache {
+    // subscriber can't run other commands
+    static subscribe(channel: string, onMessage: (message: string) => void): void {
+        const subscriber = new Redis({
+            host: Environment.env.REDIS_HOST,
+            port: Environment.env.REDIS_PORT,
+        });
+        subscriber.subscribe(channel);
+        subscriber.on('message', (_channel, message) => onMessage(message));
+    }
+
     static async getJson<T>(key: string): Promise<T | null> {
         const cached = await redis.get(key);
         if (!cached) {

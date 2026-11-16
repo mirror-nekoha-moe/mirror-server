@@ -3,6 +3,7 @@ import cors from 'cors';
 import { Environment } from '@Bootstrap/Environment';
 import { registerRoutes } from '@Route/Routes';
 import { RequestStatsService } from '@Service/RequestStatsService';
+import { EventSocket } from '@Core/Http/EventSocket';
 
 function responseSize(res: Response): number {
     const size = Number(res.getHeader('content-length'));
@@ -34,8 +35,10 @@ export class HttpServer {
         registerRoutes(app);
         RequestStatsService.start();
 
-        app.listen(Environment.env.PORT, () => {
+        const server = app.listen(Environment.env.PORT, () => {
             console.log(`Mirror API server listening on port ${Environment.env.PORT} with PID=${process.pid}`);
         });
+
+        EventSocket.start(server);
     }
 }
