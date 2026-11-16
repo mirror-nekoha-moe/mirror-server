@@ -34,8 +34,13 @@ export class BeatmapsetEventService {
         const json = BeatmapsetEventView.render(payload.source, payload.type, payload.event, row, beatmapRows);
         const data = JSON.stringify(json);
 
+        let isBeatmapset = payload.type.startsWith('beatmapset');
+        if (payload.source === 'beatmapset_events') {
+            isBeatmapset = true;
+        }
+
         for (const worker of Object.values(cluster.workers ?? {})) {
-            worker?.send({ type: EVENT_MESSAGE, data });
+            worker?.send({ type: EVENT_MESSAGE, data, isBeatmapset });
         }
 
         if (beatmapsetId && row && json.beatmapset) {

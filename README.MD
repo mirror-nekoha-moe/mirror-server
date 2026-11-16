@@ -1,5 +1,5 @@
 <a name="top"></a>
-# mirror.nekoha.moe v2.3.0
+# mirror.nekoha.moe v2.3.1
 
 REST API documentation for mirror.nekoha.moe
 
@@ -17,6 +17,7 @@ REST API documentation for mirror.nekoha.moe
   - [Search beatmapsets](#Search-beatmapsets)
 - [Events](#Events)
   - [Beatmapset events (WebSocket)](#Beatmapset-events-(WebSocket))
+  - [osu! events (WebSocket)](#osu!-events-(WebSocket))
 - [File](#File)
   - [Download a beatmapset (.osz file)](#Download-a-beatmapset-(.osz-file))
   - [Get .osu file for a beatmap](#Get-.osu-file-for-a-beatmap)
@@ -467,10 +468,10 @@ curl "https://mirror.nekoha.moe/api/search?video=true&status=ranked"
 ## <a name='Beatmapset-events-(WebSocket)'></a> Beatmapset events (WebSocket)
 [Back to top](#top)
 
-<p>Sends every beatmapset event from osu! as JSON.</p>
+<p>Same as /api/event, only beatmapset events.</p>
 
 ```
-GET /api/ws
+GET /api/event/beatmapset
 ```
 
 ### Examples
@@ -478,7 +479,7 @@ GET /api/ws
 Example usage:
 
 ```js
-const ws = new WebSocket('wss://mirror.nekoha.moe/api/ws');
+const ws = new WebSocket('wss://mirror.nekoha.moe/api/event/beatmapset');
 ```
 
 ### Success response
@@ -491,6 +492,34 @@ const ws = new WebSocket('wss://mirror.nekoha.moe/api/ws');
 | type | `String` | <p>osu! event type</p> |
 | event | `Object` | <p>osu! event</p> |
 | beatmapset | `Object` | <p>Beatmapset with beatmaps (see /api/beatmapset/:id for structure)</p> |
+
+## <a name='osu!-events-(WebSocket)'></a> osu! events (WebSocket)
+[Back to top](#top)
+
+<p>Sends every osu! event as JSON. /api/ws is the same.</p>
+
+```
+GET /api/event
+```
+
+### Examples
+
+Example usage:
+
+```js
+const ws = new WebSocket('wss://mirror.nekoha.moe/api/event');
+```
+
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| source | `String` | <p>events or beatmapset_events</p> |
+| type | `String` | <p>osu! event type</p> |
+| event | `Object` | <p>osu! event</p> |
+| beatmapset | `Object` | <p>Beatmapset with beatmaps (see /api/beatmapset/:id for structure), null for events without a beatmapset</p> |
 
 # <a name='File'></a> File
 
