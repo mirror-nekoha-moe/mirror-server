@@ -6,9 +6,16 @@ import { BeatmapsetView, BeatmapsetJson } from '@View/BeatmapsetView';
 import { OszSizeRow } from '@Model/BeatmapsetModel';
 
 export class BeatmapsetService {
+    private static cacheKey(id: number): string {
+        return `beatmapset:${id}`;
+    }
+
+    static async setCachedBeatmapset(id: number, beatmapset: BeatmapsetJson): Promise<void> {
+        await Cache.setJson(BeatmapsetService.cacheKey(id), beatmapset, Environment.env.REDIS_CACHE_TIME_LONG);
+    }
+
     static async getBeatmapset(id: number): Promise<BeatmapsetJson | null> {
-        const cacheKey = `beatmapset:${id}`;
-        const cached = await Cache.getJson<BeatmapsetJson>(cacheKey);
+        const cached = await Cache.getJson<BeatmapsetJson>(BeatmapsetService.cacheKey(id));
         if (cached) {
             return cached;
         }
@@ -20,7 +27,7 @@ export class BeatmapsetService {
         const beatmapRows = await BeatmapRepository.getByBeatmapsetId(id);
 
         const beatmapset = BeatmapsetView.render(row, beatmapRows);
-        await Cache.setJson(cacheKey, beatmapset, Environment.env.REDIS_CACHE_TIME_LONG);
+        await BeatmapsetService.setCachedBeatmapset(id, beatmapset);
         return beatmapset;
     }
 

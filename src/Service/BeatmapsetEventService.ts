@@ -5,6 +5,8 @@ import { BeatmapsetRepository } from '@Repository/BeatmapsetRepository';
 import { BeatmapRepository } from '@Repository/BeatmapRepository';
 import { BeatmapRow } from '@Model/BeatmapModel';
 import { BeatmapsetEventView } from '@View/BeatmapsetEventView';
+import { BeatmapsetService } from '@Service/BeatmapsetService';
+import { BeatmapService } from '@Service/BeatmapService';
 
 const CHANNEL = 'beatmapset_events';
 
@@ -34,6 +36,11 @@ export class BeatmapsetEventService {
 
         for (const worker of Object.values(cluster.workers ?? {})) {
             worker?.send({ type: EVENT_MESSAGE, data });
+        }
+
+        if (beatmapsetId && row && json.beatmapset) {
+            await BeatmapsetService.setCachedBeatmapset(beatmapsetId, json.beatmapset);
+            await BeatmapService.setCachedBeatmaps(beatmapRows, row);
         }
     }
 }
