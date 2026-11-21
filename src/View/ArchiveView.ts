@@ -15,6 +15,27 @@ export class ArchiveView {
             url: `/api/archive/${year}/${month}/${row.mode}`,
         };
     }
+
+    static renderYearly(
+        year: string,
+        mode: string,
+        fileSize: number,
+        beatmapsetCount: number,
+        stats: { seeds: number; peers: number } | undefined,
+    ) {
+        return {
+            year,
+            mode,
+            file_name: `${year}-${mode}.zip`,
+            size: fileSize,
+            beatmapset_count: beatmapsetCount,
+            url: `/api/archive/${year}/${mode}`,
+            torrent_url: `/api/archive/${year}/${mode}/torrent`,
+            seeds: stats?.seeds ?? null,
+            peers: stats?.peers ?? null,
+        };
+    }
 }
 
 export type ArchiveJson = ReturnType<typeof ArchiveView.render>;
+export type YearlyArchiveJson = ReturnType<typeof ArchiveView.renderYearly>;

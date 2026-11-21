@@ -1,5 +1,5 @@
 <a name="top"></a>
-# mirror.nekoha.moe v2.3.1
+# mirror.nekoha.moe v2.4.0
 
 REST API documentation for mirror.nekoha.moe
 
@@ -7,7 +7,10 @@ REST API documentation for mirror.nekoha.moe
 
 - [Archive](#Archive)
   - [Download a monthly archive](#Download-a-monthly-archive)
+  - [Download a yearly archive](#Download-a-yearly-archive)
+  - [Get a yearly archive torrent file](#Get-a-yearly-archive-torrent-file)
   - [Get monthly archives](#Get-monthly-archives)
+  - [Get yearly archives](#Get-yearly-archives)
 - [Beatmap](#Beatmap)
   - [Get beatmap metadata](#Get-beatmap-metadata)
 - [Beatmapset](#Beatmapset)
@@ -82,6 +85,90 @@ curl -OJ https://mirror.nekoha.moe/api/archive/2015/05/std
 | 404 |  | <p>Archive not found</p> |
 | 500 |  | <p>Internal server error</p> |
 
+## <a name='Download-a-yearly-archive'></a> Download a yearly archive
+[Back to top](#top)
+
+<p>Streams the zip. Downloads can be paused and resumed.</p>
+
+```
+GET /api/archive/:year/:mode
+```
+
+### Parameters - `Parameter`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| year | `String` | <p>Year (YYYY)</p> |
+| mode | `String` | <p>std, taiko, catch or mania</p> |
+
+### Examples
+
+Example usage:
+
+```curl
+curl -OJ https://mirror.nekoha.moe/api/archive/2015/std
+```
+
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| .zip | `File` | <p>The archive (application/zip)</p> |
+
+### Error response
+
+#### Error response - `Error 4xx`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| 400 |  | <p>Invalid year or mode</p> |
+| 404 |  | <p>Archive not found</p> |
+| 500 |  | <p>Internal server error</p> |
+
+## <a name='Get-a-yearly-archive-torrent-file'></a> Get a yearly archive torrent file
+[Back to top](#top)
+
+<p>Sends the .torrent for the yearly archive.</p>
+
+```
+GET /api/archive/:year/:mode/torrent
+```
+
+### Parameters - `Parameter`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| year | `String` | <p>Year (YYYY)</p> |
+| mode | `String` | <p>std, taiko, catch or mania</p> |
+
+### Examples
+
+Example usage:
+
+```curl
+curl -OJ https://mirror.nekoha.moe/api/archive/2015/std/torrent
+```
+
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| .torrent | `File` | <p>The torrent file (application/x-bittorrent)</p> |
+
+### Error response
+
+#### Error response - `Error 4xx`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| 400 |  | <p>Invalid year or mode</p> |
+| 404 |  | <p>Torrent not found</p> |
+| 500 |  | <p>Internal server error</p> |
+
 ## <a name='Get-monthly-archives'></a> Get monthly archives
 [Back to top](#top)
 
@@ -113,6 +200,48 @@ curl https://mirror.nekoha.moe/api/archive
 | archives.beatmapset_count | `Number` | <p>Beatmapsets in the zip</p> |
 | archives.created_at | `String` | <p>ISO date when the zip was built</p> |
 | archives.url | `String` | <p>Download URL</p> |
+
+### Error response
+
+#### Error response - `Error 4xx`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| 500 |  | <p>Internal server error</p> |
+
+## <a name='Get-yearly-archives'></a> Get yearly archives
+[Back to top](#top)
+
+<p>Returns all yearly archives with their torrents. Cached in Redis.</p>
+
+```
+GET /api/archive/yearly
+```
+
+### Examples
+
+Example usage:
+
+```curl
+curl https://mirror.nekoha.moe/api/archive/yearly
+```
+
+### Success response
+
+#### Success response - `Success 200`
+
+| Name     | Type       | Description                           |
+|----------|------------|---------------------------------------|
+| archives | `Object[]` |  |
+| archives.year | `String` | <p>Year (YYYY)</p> |
+| archives.mode | `String` | <p>std, taiko, catch or mania</p> |
+| archives.file_name | `String` | <p>Zip file name</p> |
+| archives.size | `Number` | <p>Size in bytes</p> |
+| archives.beatmapset_count | `Number` | <p>Beatmapsets in the zip</p> |
+| archives.url | `String` | <p>Download URL</p> |
+| archives.torrent_url | `String` | <p>.torrent download URL</p> |
+| archives.seeds | `Number` | <p>Seeds, null if unknown</p> |
+| archives.peers | `Number` | <p>Peers, null if unknown</p> |
 
 ### Error response
 

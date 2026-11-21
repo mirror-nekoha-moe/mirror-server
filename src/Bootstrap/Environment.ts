@@ -55,6 +55,10 @@ export interface EnvType {
     DOMAIN: string;
     DISCORD_REQUEST_WEBHOOK_URL: string;
 
+    QBIT_URL: string;
+    QBIT_USERNAME: string;
+    QBIT_PASSWORD: string;
+
     DB_QUERY_CONCURRENCY: number;
     DB_QUEUE_LIMIT: number;
 }
@@ -116,6 +120,10 @@ export class Environment {
             PORT: readNumber('PORT', 30727),
             DOMAIN: readString('DOMAIN'),
             DISCORD_REQUEST_WEBHOOK_URL: readString('DISCORD_REQUEST_WEBHOOK_URL'),
+
+            QBIT_URL: readString('QBIT_URL'),
+            QBIT_USERNAME: readString('QBIT_USERNAME'),
+            QBIT_PASSWORD: readString('QBIT_PASSWORD'),
 
             DB_QUERY_CONCURRENCY: readNumber('DB_QUERY_CONCURRENCY', 16),
             DB_QUEUE_LIMIT: readNumber('DB_QUEUE_LIMIT', 5000),

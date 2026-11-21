@@ -22,6 +22,10 @@ export function registerRoutes(app: Express): void {
 
     // Archives
     app.get('/api/archive', handle(ArchiveController.listArchives, 'Failed to fetch archives'));
+    app.get('/api/archive/yearly', handle(ArchiveController.listYearlyArchives, 'Failed to fetch yearly archives'));
+    app.get('/api/archive/:year/:mode', handle(ArchiveController.downloadYearlyArchive, 'Failed to download archive'));
+    // keep above the monthly route
+    app.get('/api/archive/:year/:mode/torrent', handle(ArchiveController.getYearlyTorrent, 'Failed to fetch torrent file'));
     app.get('/api/archive/:year/:month/:mode', handle(ArchiveController.downloadArchive, 'Failed to download archive'));
 
     // Stats
