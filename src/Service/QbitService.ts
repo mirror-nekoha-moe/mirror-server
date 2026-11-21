@@ -1,8 +1,8 @@
 import { Environment } from '@Bootstrap/Environment';
 
 export class QbitService {
-    static async getTorrentStats(): Promise<Map<string, { seeds: number; peers: number; magnet: string }>> {
-        const stats = new Map<string, { seeds: number; peers: number; magnet: string }>();
+    static async getTorrentStats(): Promise<Map<string, { seeds: number; leechers: number; magnet: string }>> {
+        const stats = new Map<string, { seeds: number; leechers: number; magnet: string }>();
         const url = Environment.env.QBIT_URL;
         if (!url) {
             return stats;
@@ -34,7 +34,7 @@ export class QbitService {
         for (const torrent of torrents) {
             stats.set(torrent.name, {
                 seeds: torrent.num_complete,
-                peers: torrent.num_incomplete,
+                leechers: torrent.num_incomplete,
                 magnet: torrent.magnet_uri,
             });
         }

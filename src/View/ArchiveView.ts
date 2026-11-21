@@ -21,8 +21,19 @@ export class ArchiveView {
         mode: string,
         fileSize: number,
         beatmapsetCount: number,
-        stats: { seeds: number; peers: number; magnet: string } | undefined,
+        stats: { seeds: number; leechers: number; magnet: string } | undefined,
     ) {
+        let seeds: number | null = null;
+        let leechers: number | null = null;
+        let peers: number | null = null;
+        let magnet: string | null = null;
+        if (stats) {
+            seeds = stats.seeds;
+            leechers = stats.leechers;
+            peers = stats.seeds + stats.leechers;
+            magnet = stats.magnet;
+        }
+
         return {
             year,
             mode,
@@ -31,9 +42,10 @@ export class ArchiveView {
             beatmapset_count: beatmapsetCount,
             url: `/api/archive/${year}/${mode}`,
             torrent_url: `/api/archive/${year}/${mode}/torrent`,
-            seeds: stats?.seeds ?? null,
-            peers: stats?.peers ?? null,
-            magnet: stats?.magnet ?? null,
+            seeds,
+            peers,
+            leechers,
+            magnet,
         };
     }
 }
