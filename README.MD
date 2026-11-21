@@ -1,5 +1,5 @@
 <a name="top"></a>
-# mirror.nekoha.moe v2.4.0
+# mirror.nekoha.moe v2.4.1
 
 REST API documentation for mirror.nekoha.moe
 
@@ -242,6 +242,7 @@ curl https://mirror.nekoha.moe/api/archive/yearly
 | archives.torrent_url | `String` | <p>.torrent download URL</p> |
 | archives.seeds | `Number` | <p>Seeds, null if unknown</p> |
 | archives.peers | `Number` | <p>Peers, null if unknown</p> |
+| archives.magnet | `String` | <p>Magnet link, null if unknown</p> |
 
 ### Error response
 

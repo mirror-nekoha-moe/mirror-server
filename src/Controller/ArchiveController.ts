@@ -87,6 +87,7 @@ export class ArchiveController {
      * @apiSuccess {String}   archives.torrent_url      .torrent download URL
      * @apiSuccess {Number}   archives.seeds            Seeds, null if unknown
      * @apiSuccess {Number}   archives.peers            Peers, null if unknown
+     * @apiSuccess {String}   archives.magnet           Magnet link, null if unknown
      * @apiError 500 Internal server error
      * @apiExample {curl} Example usage:
      *     curl https://mirror.nekoha.moe/api/archive/yearly

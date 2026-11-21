@@ -21,7 +21,7 @@ export class ArchiveView {
         mode: string,
         fileSize: number,
         beatmapsetCount: number,
-        stats: { seeds: number; peers: number } | undefined,
+        stats: { seeds: number; peers: number; magnet: string } | undefined,
     ) {
         return {
             year,
@@ -33,6 +33,7 @@ export class ArchiveView {
             torrent_url: `/api/archive/${year}/${mode}/torrent`,
             seeds: stats?.seeds ?? null,
             peers: stats?.peers ?? null,
+            magnet: stats?.magnet ?? null,
         };
     }
 }
